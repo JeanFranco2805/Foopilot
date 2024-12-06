@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Restaurante</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/auth/Login.css') }}">
+</head>
+<body>
+<div class="login-container">
+    <!-- Cuadro flotante con información -->
+    <div class="info-box">
+        <h2>¡Bienvenido al Restaurante!</h2>
+        <p>
+            Disfruta de los mejores sabores y una experiencia única. Ofrecemos una amplia variedad de cervezas, vinos y platillos gourmet que no te puedes perder.
+            <br><br>
+            ¡Aprovecha nuestras promociones especiales los fines de semana!
+        </p>
+    </div>
+
+    <!-- Formulario de Login -->
+    <div class="login-box">
+        <h1>Inicia Sesión</h1>
+        <form action="#" method="GET">
+            <div class="input-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Ingresar</button>
+        </form>
+        <p class="register-link">¿No tienes cuenta? <a href="{{ url_for('auth.SignUp') }}">Regístrate aquí</a></p>
+    </div>
+</div>
+</body>
+</html>

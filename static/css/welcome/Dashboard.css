@@ -1,0 +1,96 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Configuración general */
+body, html {
+    font-family: 'Arial', sans-serif;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5') no-repeat center center fixed;
+    background-size: cover;
+    color: #ffffff;
+}
+
+/* Contenedor principal */
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+/* Caja de bienvenida */
+.welcome-box {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+}
+
+/* Título */
+.welcome-box h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+/* Subtítulo */
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    color: #ddd;
+}
+
+/* Botones */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.btn {
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 15px 20px;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+/* Estilo específico para cada botón */
+.btn-large {
+    font-size: 1.8rem;
+    padding: 20px 30px;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 5px 20px rgba(255, 255, 255, 0.5);
+}
+
+.btn:nth-child(1) {
+    background: linear-gradient(45deg, #FF7F50, #FF4500);
+}
+
+.btn:nth-child(1):hover {
+    background: linear-gradient(45deg, #FF6347, #FF0000);
+}
+
+.btn:nth-child(2) {
+    background: linear-gradient(45deg, #1E90FF, #00008B);
+}
+
+.btn:nth-child(2):hover {
+    background: linear-gradient(45deg, #4682B4, #0000CD);
+}

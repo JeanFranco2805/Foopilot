@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú del Restaurante</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/home/Home.css') }}">
+    <script src="{{ url_for('static', filename='js/Home.js') }}"></script>
+</head>
+<body>
+<div class="menu-container">
+    <header class="menu-header">
+        <h1>Menú del Restaurante</h1>
+        <p>¡Disfruta de nuestros platillos y bebidas!</p>
+    </header>
+
+    <section class="menu-items" id="menu">
+        <div class="menu-item">
+            <img src="https://static.wixstatic.com/media/nsplsh_783030437a42743444666b~mv2_d_6016_4016_s_4_2.jpg/v1/crop/x_370,y_591,w_5634,h_3425/fill/w_236,h_145,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image%20by%20Aur%C3%A9lien%20Lemasson-Th%C3%A9obald.jpg" alt="Pizza Artesanal" class="menu-image">
+            <h2>Pizza Artesanal</h2>
+            <p>Masa hecha a mano con ingredientes frescos.</p>
+            <span class="price">$12.99</span>
+        </div>
+        <div class="menu-item">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Costillas BBQ" class="menu-image">
+            <h2>Costillas BBQ</h2>
+            <p>Cocinadas lentamente y cubiertas con salsa BBQ casera.</p>
+            <span class="price">$18.99</span>
+        </div>
+        <div class="menu-item">
+            <img src="https://topbeer.mx/wp-content/uploads/2022/09/vaso-con-ingredientes-para-hacer-cerveza-artesanal-1024x683.jpg" alt="Cerveza Artesanal" class="menu-image">
+            <h2>Cerveza Artesanal</h2>
+            <p>El acompañante perfecto para cualquier platillo.</p>
+            <span class="price">$5.50</span>
+        </div>
+        <div class="menu-item">
+            <img src="https://www.gourmet.cl/wp-content/uploads/2016/09/Ensalada_C%C3%A9sar-web.jpg" alt="Ensalada César" class="menu-image">
+            <h2>Ensalada César</h2>
+            <p>Fresca y saludable con aderezo César clásico.</p>
+            <span class="price">$8.50</span>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+/* Configuración general */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('https://cdn.pixabay.com/photo/2024/02/23/00/33/ai-generated-8591048_1280.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    position: relative;
+}
+
+/* Aplicar desenfoque */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px); /* Desenfoque aplicado */
+    background: rgba(0, 0, 0, 0.4); /* Oscurece ligeramente el fondo */
+    z-index: 1;
+}
+
+/* Contenedor del Login */
+.login-container {
+    z-index: 2; /* Elevar contenido sobre el desenfoque */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    height: 70%;
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Cuadro de Información */
+.info-box {
+    width: 50%;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.6); /* Fondo semi-transparente */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+}
+
+.info-box h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.info-box p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #666;
+}
+
+/* Caja del Login */
+.login-box {
+    width: 50%;
+    padding: 40px;
+    background: rgba(255, 255, 255, 1); /* Fondo blanco sólido */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #222;
+}
+
+/* Grupos de Input */
+.input-group {
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Botón */
+.btn {
+    width: 112%;
+    padding: 10px;
+    background: #ff7b54;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn:hover {
+    background: #ff5436;
+}
+
+/* Enlace de Registro */
+.register-link {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #ff7b54;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}

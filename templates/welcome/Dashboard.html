@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida - Restaurante</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/Dashboard.css') }}">
+</head>
+<body>
+<div class="welcome-container">
+    <div class="welcome-box">
+        <h1>¡Bienvenido al Restaurante!</h1>
+        <p class="subtitle">Selecciona cómo deseas continuar:</p>
+        <div class="button-group">
+            <!-- Botón Cliente -->
+            <a href="{{ url_for('home.Home') }}" class="btn btn-large">Cliente</a>
+            <!-- Botón Empleado -->
+            <a href="{{ url_for('auth.Login') }}" class="btn btn-large">Empleado</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

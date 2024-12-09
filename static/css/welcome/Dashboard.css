@@ -1,11 +1,9 @@
-/* Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Configuración general */
 body, html {
     font-family: 'Arial', sans-serif;
     height: 100%;
@@ -14,7 +12,6 @@ body, html {
     color: #ffffff;
 }
 
-/* Contenedor principal */
 .welcome-container {
     display: flex;
     justify-content: center;
@@ -26,7 +23,6 @@ body, html {
     padding: 20px;
 }
 
-/* Caja de bienvenida */
 .welcome-box {
     background: rgba(255, 255, 255, 0.2);
     padding: 40px 20px;
@@ -36,20 +32,17 @@ body, html {
     max-width: 400px;
 }
 
-/* Título */
 .welcome-box h1 {
     font-size: 2.5rem;
     margin-bottom: 15px;
 }
 
-/* Subtítulo */
 .subtitle {
     font-size: 1.2rem;
     margin-bottom: 25px;
     color: #ddd;
 }
 
-/* Botones */
 .button-group {
     display: flex;
     flex-direction: column;
@@ -68,7 +61,6 @@ body, html {
     font-weight: bold;
 }
 
-/* Estilo específico para cada botón */
 .btn-large {
     font-size: 1.8rem;
     padding: 20px 30px;

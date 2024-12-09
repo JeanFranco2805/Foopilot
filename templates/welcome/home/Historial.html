@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Pedidos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Historial.css') }}">
+    <script src="{{ url_for('static', filename='js/Historial.js') }}"></script>
+</head>
+<body>
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Panel Administrativo</h2>
+        </div>
+        <div class="sidebar-title"></div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
+                <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
+                <li><a href="{{ url_for('home.mesasPanel') }}">Mesas</a></li>
+                <li><a href="#historial" class="active">Historial</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-profile">
+            <img src="https://via.placeholder.com/50" alt="Foto de perfil">
+            <div class="profile-info">
+                <p><strong>Juan Pérez</strong></p>
+                <p>Administrador</p>
+            </div>
+            <button class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Historial de Pedidos</h1>
+        </header>
+        <div class="filter-container">
+            <button class="filter-btn">Pendientes</button>
+            <button class="filter-btn">Entregados</button>
+            <button class="filter-btn">Mostrar Todos</button>
+        </div>
+        <div class="table-container">
+            <table class="history-table">
+                <thead>
+                <tr>
+                    <th># Mesa</th>
+                    <th>Mesero</th>
+                    <th>Total Pedido</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Detalles</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Juan Pérez</td>
+                    <td>$45.00</td>
+                    <td>10:12:2024 15:30:00</td>
+                    <td>Entregado</td>
+                    <td><button class="details-btn">Ver Detalles</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Maria López</td>
+                    <td>$60.00</td>
+                    <td>10:12:2024 14:20:00</td>
+                    <td>Entregado</td>
+                    <td><button class="details-btn">Ver Detalles</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

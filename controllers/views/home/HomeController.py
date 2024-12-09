@@ -8,8 +8,26 @@ def Home():
     return render_template('welcome/home/Home.html')
 
 
-#Manejo de los formularios
-
 @home.route("/employee/product")
 def addProduct():
     return render_template('welcome/home/forms/ProductsToMenu.html')
+
+
+@home.route("/employee/admin")
+def adminPanel():
+    return render_template('welcome/home/Admin.html')
+
+
+@home.route("/employee/mesas")
+def mesasPanel():
+    return render_template('welcome/home/Mesas.html')
+
+
+@home.route('/employee/orders')
+def ordersPanel():
+    return render_template('welcome/home/Orders.html')
+
+
+@home.route("/employee/history")
+def historyPane():
+    return render_template('welcome/home/Historial.html')

@@ -1,6 +1,11 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 
 authController = Blueprint('auth', __name__, template_folder="../../templates/welcome/auth")
+
+
+@authController.route("/registered")
+def registered():
+    return redirect(url_for('Login'))
 
 
 @authController.route('/login')

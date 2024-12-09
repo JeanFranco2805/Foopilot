@@ -1,14 +1,12 @@
-/* Configuración General */
 body, html {
     margin: 0;
     padding: 0;
     font-family: 'Georgia', serif;
     background: url('https://cdn.pixabay.com/photo/2016/11/18/14/10/wood-1839126_1280.jpg') no-repeat center center fixed;
     background-size: cover;
-    color: #4a2f1c; /* Color marrón oscuro */
+    color: #4a2f1c;
 }
 
-/* Contenedor principal */
 .menu-container {
     max-width: 50%;
     margin: 0 auto;
@@ -18,7 +16,6 @@ body, html {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Encabezado del menú */
 .menu-header {
     text-align: center;
     margin-bottom: 20px;
@@ -35,7 +32,6 @@ body, html {
     color: #6d4e3e;
 }
 
-/* Items del menú */
 .menu-items {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -49,10 +45,8 @@ body, html {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-
 }
 
-/* Imagen del platillo */
 .menu-image {
     width: 100%;
     height: auto;
@@ -60,7 +54,6 @@ body, html {
     margin-bottom: 10px;
 }
 
-/* Títulos y texto */
 .menu-item h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
@@ -84,7 +77,6 @@ body, html {
     background: #fff3e0;
 }
 
-/* Responsividad */
 @media (max-width: 600px) {
     .menu-items {
         grid-template-columns: 1fr;

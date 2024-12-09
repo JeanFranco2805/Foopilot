@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Admin.css') }}">
+    <script src="{{ url_for('static', filename='js/AdminPanel.js') }}"></script>
+</head>
+<body>
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Panel Administrativo</h2>
+        </div>
+        <div class="sidebar-title"></div>
+        <nav>
+            <ul>
+                <li><a href="#menu">Menú Principal</a></li>
+                <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
+                <li><a href="{{ url_for('home.mesasPanel') }}">Mesas</a></li>
+                <li><a href="{{ url_for('home.historyPane') }}">Historial</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-profile">
+            <img src="https://via.placeholder.com/50" alt="Foto de perfil">
+            <div class="profile-info">
+                <p><strong>Juan Pérez</strong></p>
+                <p>Mesero</p>
+            </div>
+            <button class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Menú del Restaurante</h1>
+            <p>Administra los productos disponibles en el menú.</p>
+        </header>
+        <div class="category-menu-container">
+            <h2>Categorías</h2>
+            <div id="categories">
+            </div>
+            <button id="add-category-btn" class="add-category-btn">Añadir Categoría</button>
+        </div>
+
+
+        <section class="menu-items" id="menu">
+            <div class="menu-item">
+                <img src="https://static.wixstatic.com/media/nsplsh_783030437a42743444666b~mv2_d_6016_4016_s_4_2.jpg/v1/crop/x_370,y_591,w_5634,h_3425/fill/w_236,h_145,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image%20by%20Aur%C3%A9lien%20Lemasson-Th%C3%A9obald.jpg" alt="Pizza Artesanal" class="menu-image" onclick="editImage(this)">
+                <h2 contenteditable="true">Pizza Artesanal</h2>
+                <p contenteditable="true">Masa hecha a mano con ingredientes frescos.</p>
+                <span class="price" contenteditable="true">$12.99</span>
+                <div class="menu-actions">
+                    <button class="edit-btn" onclick="editProduct(this)">Editar</button>
+                    <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Costillas BBQ" class="menu-image" onclick="editImage(this)">
+                <h2 contenteditable="true">Costillas BBQ</h2>
+                <p contenteditable="true">Cocinadas lentamente y cubiertas con salsa BBQ casera.</p>
+                <span class="price" contenteditable="true">$18.99</span>
+                <div class="menu-actions">
+                    <button class="edit-btn" onclick="editProduct(this)">Editar</button>
+                    <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

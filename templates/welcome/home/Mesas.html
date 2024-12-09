@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/home/Mesas.css') }}">
+    <script src="{{ url_for('static',filename='js/Mesas.js') }}"></script>
+</head>
+<body>
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Panel Administrativo</h2>
+        </div>
+        <div class="sidebar-title"></div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
+                <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
+                <li><a href="#mesas">Mesas</a></li>
+                <li><a href="{{ url_for('home.historyPane') }}">Historial</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-profile">
+            <img src="https://via.placeholder.com/50" alt="Foto de perfil">
+            <div class="profile-info">
+                <p><strong>Juan Pérez</strong></p>
+                <p>Mesero</p>
+            </div>
+            <button class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Gestión de Mesas</h1>
+        </header>
+        <div class="menu-items">
+        </div>
+        <div class="add-new-item">
+            <button id="add-card-btn" class="add-btn">+</button>
+        </div>
+    </main>
+</div>
+</body>
+</html>

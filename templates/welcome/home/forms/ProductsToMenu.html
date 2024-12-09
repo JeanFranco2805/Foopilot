@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Producto</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/home/forms/ProductsToMenu.css') }}">
+    <script src="{{ url_for('static',filename='js/ProductsToMenu.js')}}"></script>
 </head>
 <body>
 <div class="form-container">
     <h1>Agregar Producto</h1>
-    <form action="#" method="POST" enctype="multipart/form-data">
+    <form enctype="multipart/form-data">
         <!-- Nombre del producto -->
         <div class="input-group">
             <label for="product-name">Nombre</label>
@@ -31,7 +32,7 @@
             <input type="file" id="product-image" name="product-image" accept="image/*" required>
         </div>
         <!-- Botón para enviar -->
-        <button type="submit" class="btn">Agregar al Menú</button>
+        <button type="submit" class="btn" id="btnSubmit" onsubmit="handleSubmit">Agregar al Menú</button>
     </form>
 </div>
 </body>

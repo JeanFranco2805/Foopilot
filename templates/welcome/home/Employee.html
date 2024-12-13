@@ -13,12 +13,14 @@
         <div class="sidebar-header">
             <h2>Panel Administrativo</h2>
         </div>
+        <div class="sidebar-title"></div>
         <nav>
             <ul>
                 <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
+                <li><a href="{{ url_for('home.registerEmployee') }}">Empleados</a></li>
                 <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
                 <li><a href="{{ url_for('home.mesasPanel') }}">Mesas</a></li>
-                <li><a href="#usuarios" class="active">Usuarios</a></li>
+                <li><a href="{{ url_for('home.historyPane') }}">Historial</a></li>
             </ul>
         </nav>
         <div class="sidebar-profile">

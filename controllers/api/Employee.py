@@ -29,6 +29,54 @@ def get_all_employees():
     ]), 200
 
 
+@employee.route("/email/<string:correo>", methods=["GET"])
+def get_employee_by_email(correo):
+    try:
+        empleado = Employee.query.filter_by(correo=correo).first()
+
+        if not empleado:
+            return jsonify({"error": f"Empleado con correo {correo} no encontrado"}), 404
+
+        return jsonify({
+            "id": empleado.id,
+            "nombre": empleado.nombre,
+            "apellido": empleado.apellido,
+            "cargo": empleado.cargo,
+            "estado": empleado.estado,
+            "fecha_contratacion": empleado.fecha_contratacion.strftime(
+                "%Y-%m-%d") if empleado.fecha_contratacion else None,
+            "telefono": empleado.telefono,
+            "correo": empleado.correo,
+            "password": empleado.password
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener empleado: {str(e)}"}), 500
+
+
+@employee.route("/login", methods=["POST"])
+def login_employee():
+    data = request.json
+
+    if not data or "email" not in data or "password" not in data:
+        return jsonify({"error": "Email y password son requeridos"}), 400
+
+    email = data["email"]
+    password = data["password"]
+
+    empleado = Employee.query.filter_by(correo=email).first()
+
+    if not empleado or empleado.password != password:  # Aquí puedes agregar hash comparativo si es necesario.
+        return jsonify({"error": "Credenciales incorrectas"}), 401
+
+    return jsonify({
+        "message": "Inicio de sesión exitoso",
+        "id": empleado.id,
+        "nombre": empleado.nombre,
+        "apellido": empleado.apellido
+    }), 200
+
+
+
 @employee.route("/add", methods=["POST"])
 def add_employee():
     try:

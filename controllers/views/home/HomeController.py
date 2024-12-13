@@ -31,3 +31,8 @@ def ordersPanel():
 @home.route("/employee/history")
 def historyPane():
     return render_template('welcome/home/Historial.html')
+
+
+@home.route("/employee/register")
+def registerEmployee():
+    return render_template('welcome/home/Employee.html')

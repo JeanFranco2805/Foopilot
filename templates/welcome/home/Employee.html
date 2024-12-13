@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Employee.css') }}">
+    <script src="{{ url_for('static', filename='js/Employee.js') }}"></script>
+</head>
+<body>
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Panel Administrativo</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
+                <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
+                <li><a href="{{ url_for('home.mesasPanel') }}">Mesas</a></li>
+                <li><a href="#usuarios" class="active">Usuarios</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-profile">
+            <img src="https://via.placeholder.com/50" alt="Foto de perfil">
+            <div class="profile-info">
+                <p><strong>Juan Pérez</strong></p>
+                <p>Administrador</p>
+            </div>
+            <button class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Gestión de Usuarios</h1>
+        </header>
+        <div class="table-container">
+            <a href="{{ url_for('auth.SignUp') }}" class="add-btn">Insertar Nuevo Usuario</a>
+            <table class="users-table">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo Electrónico</th>
+                    <th>Contraseña</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

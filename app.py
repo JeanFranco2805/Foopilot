@@ -1,7 +1,5 @@
 from flask import Flask
 from flask import render_template
-from flask_sqlalchemy import SQLAlchemy
-
 from controllers.views.auth.AuthController import authController
 from controllers.views.home.HomeController import home
 from controllers.api.Employee import employee

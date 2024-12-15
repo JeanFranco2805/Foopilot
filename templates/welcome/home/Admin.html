@@ -41,35 +41,33 @@
         </header>
         <div class="category-menu-container">
             <h2>Categorías</h2>
-            <div id="categories">
-            </div>
+            <div id="categories"></div>
             <button id="add-category-btn" class="add-category-btn">Añadir Categoría</button>
         </div>
 
-
         <section class="menu-items" id="menu">
-            <div class="menu-item">
-                <img src="https://static.wixstatic.com/media/nsplsh_783030437a42743444666b~mv2_d_6016_4016_s_4_2.jpg/v1/crop/x_370,y_591,w_5634,h_3425/fill/w_236,h_145,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image%20by%20Aur%C3%A9lien%20Lemasson-Th%C3%A9obald.jpg" alt="Pizza Artesanal" class="menu-image" onclick="editImage(this)">
-                <h2 contenteditable="true">Pizza Artesanal</h2>
-                <p contenteditable="true">Masa hecha a mano con ingredientes frescos.</p>
-                <span class="price" contenteditable="true">$12.99</span>
-                <div class="menu-actions">
-                    <button class="edit-btn" onclick="editProduct(this)">Editar</button>
-                    <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
-                </div>
-            </div>
+            <!-- Ejemplo de tarjeta existente -->
             <div class="menu-item">
                 <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Costillas BBQ" class="menu-image" onclick="editImage(this)">
-                <h2 contenteditable="true">Costillas BBQ</h2>
-                <p contenteditable="true">Cocinadas lentamente y cubiertas con salsa BBQ casera.</p>
-                <span class="price" contenteditable="true">$18.99</span>
+                <h2 contenteditable="true">Pizza Artesanal</h2>
+                <p contenteditable="true">Masa fresca hecha con frutas</p>
+                <div class="details">
+                    <p><strong>Categoría:</strong> Comida Rápida</p>
+                    <p><strong>ID:</strong> 567</p>
+                </div>
+                <span class="price" contenteditable="true">$10.99</span>
                 <div class="menu-actions">
                     <button class="edit-btn" onclick="editProduct(this)">Editar</button>
                     <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
                 </div>
             </div>
+            <div class="add-card-container">
+                <a href="{{ url_for('home.addProduct') }}" id="add-card-btn" class="add-card-btn" onclick="addNewCard()">+</a>
+            </div>
         </section>
+
     </main>
+
 </div>
 </body>
 </html>

@@ -77,3 +77,33 @@ body, html {
 .btn:hover {
     background: #0056b3;
 }
+
+/* Contenedor para mostrar productos */
+#product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+    justify-content: center; /* Centra los productos */
+}
+
+/* Estilo de cada producto */
+.producto {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.producto h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.producto p {
+    margin: 5px 0;
+    color: #666;
+}

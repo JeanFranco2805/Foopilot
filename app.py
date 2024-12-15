@@ -9,7 +9,7 @@ app = Flask(__name__, template_folder='templates')
 app.register_blueprint(authController, url_prefix='/auth')
 app.register_blueprint(home, url_prefix='/home')
 app.register_blueprint(employee, url_prefix='/api/employee')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/PuntoFrio'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0219@localhost:5432/PuntoFrio'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 

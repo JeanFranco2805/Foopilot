@@ -17,7 +17,6 @@ def addProduct():
 def adminPanel():
     return render_template('welcome/home/Admin.html')
 
-
 @home.route("/employee/mesas")
 def mesasPanel():
     return render_template('welcome/home/Mesas.html')

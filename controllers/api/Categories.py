@@ -4,6 +4,7 @@ from model.dao.Categories import Categories, db
 
 categories_bp = Blueprint('categories_bp', __name__)
 
+
 @categories_bp.route('/', methods=['GET'])
 def get_all_categories():
     try:
@@ -12,6 +13,20 @@ def get_all_categories():
             {'id_categoria': c.id_categoria, 'nombre_categoria': c.nombre_categoria}
             for c in categories
         ]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@categories_bp.route('/<int:id_categoria>', methods=['GET'])
+def get_category_by_id(id_categoria):
+    try:
+        categoria = Categories.query.get(id_categoria)
+        if not categoria:
+            return jsonify({'error': 'Categoría no encontrada'}), 404
+        return jsonify({
+            'id_categoria': categoria.id_categoria,
+            'nombre_categoria': categoria.nombre_categoria
+        }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

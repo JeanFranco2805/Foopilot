@@ -61,11 +61,10 @@
                     <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
                 </div>
             </div>
-            <div class="add-card-container">
-                <a href="{{ url_for('home.addProduct') }}" id="add-card-btn" class="add-card-btn" onclick="addNewCard()">+</a>
-            </div>
         </section>
-
+        <div class="add-card-container">
+            <a id="add-card-btn" class="add-card-btn" href="{{ url_for('home.addProduct') }}" >+</a>
+        </div>
     </main>
 
 </div>

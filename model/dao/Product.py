@@ -1,5 +1,6 @@
 from model.db import db
 
+
 class Product(db.Model):
     __tablename__ = "Productos"
 
@@ -7,6 +8,7 @@ class Product(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     precio = db.Column(db.Numeric, nullable=False)
     categoria_id = db.Column(db.Integer, db.ForeignKey("categorias.id_categoria"), nullable=False)
+    imagen = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"<Product {self.nombre} (${self.precio})>"

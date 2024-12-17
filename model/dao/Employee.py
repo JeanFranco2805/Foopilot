@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Date
 
-db = SQLAlchemy()
+from model.db import db
 
 
 class Employee(db.Model):

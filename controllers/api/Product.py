@@ -16,10 +16,11 @@ session = db.session
 def get_all_products():
     productos = Product.query.all()
     result = [{
-        'id': p.id,
+        'id': p.id_producto,
         'nombre': p.nombre,
         'precio': float(p.precio),
-        'categoria_id': p.categoria_id
+        'categoria_id': p.categoria_id,
+        'imagen':p.imagen
     } for p in productos]
     return jsonify(result), 200
 
@@ -30,11 +31,12 @@ def add_product():
     nombre = data.get('nombre')
     precio = data.get('precio')
     categoria_id = data.get('categoria_id')
+    imagen = data.get('imagen')  # Obtener el Base64 de la imagen
 
     if not all([nombre, precio, categoria_id]):
         return jsonify({'error': 'Faltan datos'}), 400
 
-    new_product = Product(nombre=nombre, precio=precio, categoria_id=categoria_id)
+    new_product = Product(nombre=nombre, precio=precio, categoria_id=categoria_id, imagen=imagen)
     db.session.add(new_product)
     db.session.commit()
     return jsonify({'message': 'Producto creado exitosamente'}), 201

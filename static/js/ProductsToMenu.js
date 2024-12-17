@@ -15,8 +15,8 @@ async function loadCategories() {
 
             categories.forEach((category) => {
                 const option = document.createElement("option");
-                option.value = category.id_categoria; // Usa el ID como valor
-                option.textContent = category.nombre_categoria; // Muestra el nombre de la categoría
+                option.value = category.id_categoria;
+                option.textContent = category.nombre_categoria;
                 categorySelect.appendChild(option);
             });
         } else {
@@ -38,9 +38,9 @@ function load() {
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            url = e.target.result;
+            url = e.target.result; // Guardar el Base64 de la imagen
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Convertir archivo en Base64
     });
 
     loadCategories();
@@ -53,11 +53,10 @@ async function handleSubmit(event) {
     let price = document.getElementById("product-price");
     let category = document.getElementById("product-category");
 
-    if (productName && productDesc && price && category) {
+    if (productName && productDesc && price && category && url) {
         const selectedCategoryName = category.options[category.selectedIndex].text;
 
         try {
-            // Buscar la categoría por su nombre
             const categoryResponse = await fetch(BASE_URL_CATEGORIES + "/");
             if (!categoryResponse.ok) {
                 throw new Error("Error al obtener las categorías");
@@ -72,14 +71,13 @@ async function handleSubmit(event) {
                 throw new Error("Categoría no encontrada");
             }
 
-            // Construir el cuerpo del producto con el ID de la categoría obtenida
             const productData = {
                 nombre: productName.value,
                 precio: parseFloat(price.value),
-                categoria_id: selectedCategory.id_categoria, // Usar el ID de la categoría
+                categoria_id: selectedCategory.id_categoria,
+                imagen: url
             };
 
-            // Enviar el producto al backend
             const productResponse = await fetch(BASE_URL_PRODUCTS + "/productos", {
                 method: "POST",
                 headers: {
@@ -90,11 +88,11 @@ async function handleSubmit(event) {
 
             if (productResponse.ok) {
                 alert("Producto agregado exitosamente");
-                // Opcional: limpiar el formulario
                 productName.value = "";
                 productDesc.value = "";
                 price.value = "";
                 category.selectedIndex = 0;
+                document.getElementById("product-image").value = "";
             } else {
                 const errorData = await productResponse.json();
                 console.error("Error al agregar el producto:", errorData.error);
@@ -105,7 +103,6 @@ async function handleSubmit(event) {
             alert("Error al procesar el formulario. Revisa la consola para más detalles.");
         }
     } else {
-        console.error("Algunos elementos del formulario no se encontraron.");
         alert("Por favor, completa todos los campos del formulario.");
     }
 }

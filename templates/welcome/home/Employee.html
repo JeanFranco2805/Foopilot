@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Pedidos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Historial.css') }}">
-    <script src="{{ url_for('static', filename='js/Historial.js') }}"></script>
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Employee.css') }}">
+    <script src="{{ url_for('static', filename='js/Employee.js') }}"></script>
 </head>
 <body>
 <div class="admin-container">
@@ -35,42 +35,21 @@
 
     <main class="main-content">
         <header>
-            <h1>Historial de Pedidos</h1>
+            <h1>Gestión de Usuarios</h1>
         </header>
-        <div class="filter-container">
-            <button class="filter-btn">Pendientes</button>
-            <button class="filter-btn">Entregados</button>
-            <button class="filter-btn">Mostrar Todos</button>
-        </div>
         <div class="table-container">
-            <table class="history-table">
+            <a href="{{ url_for('auth.SignUp') }}" class="add-btn">Insertar Nuevo Usuario</a>
+            <table class="users-table">
                 <thead>
                 <tr>
-                    <th># Mesa</th>
-                    <th>Mesero</th>
-                    <th>Total Pedido</th>
-                    <th>Fecha</th>
+                    <th>Nombre</th>
+                    <th>Correo Electrónico</th>
+                    <th>Contraseña</th>
                     <th>Estado</th>
-                    <th>Detalles</th>
+                    <th>Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Juan Pérez</td>
-                    <td>$45.00</td>
-                    <td>10:12:2024 15:30:00</td>
-                    <td>Entregado</td>
-                    <td><button class="details-btn">Ver Detalles</button></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Maria López</td>
-                    <td>$60.00</td>
-                    <td>10:12:2024 14:20:00</td>
-                    <td>Entregado</td>
-                    <td><button class="details-btn">Ver Detalles</button></td>
-                </tr>
                 </tbody>
             </table>
         </div>

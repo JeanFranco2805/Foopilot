@@ -8,34 +8,78 @@
     <script src="{{ url_for('static',filename='js/auth/SignUp.js') }}"></script>
 </head>
 <body>
-<div class="register-container">
-    <div class="register-box">
-        <h1>Regístrate</h1>
-        <form action="{{ url_for('auth.Login') }}">
-            <!-- Nombre -->
-            <div class="input-group">
-                <label for="name">Nombre</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <!-- Correo -->
-            <div class="input-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <!-- Contraseña -->
-            <div class="input-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <!-- Confirmar Contraseña -->
-            <div class="input-group">
-                <label for="confirm-password">Confirmar Contraseña</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
-            </div>
-            <!-- Botón de Registro -->
-            <button type="submit" class="btn" id="buttonSignUp">Crear Cuenta</button>
-        </form>
-        <p class="login-link">¿Ya tienes cuenta? <a href={{ url_for('auth.Login') }}>Inicia sesión</a></p>
+<div class="register-wrapper">
+    <div class="register-left">
+        <div class="welcome-text">
+            <h2>Bienvenido</h2>
+            <p>Gestiona tu cuenta de forma sencilla con este formulario de registro. ¡Te esperamos!</p>
+        </div>
+    </div>
+    <div class="register-right">
+        <div class="register-form">
+            <h2>Crear una cuenta</h2>
+            <form action="#">
+                <!-- Nombre y Apellido -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="lastname">Apellido</label>
+                        <input type="text" id="lastname" name="lastname" required>
+                    </div>
+                </div>
+                <!-- Cargo y Estado -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="role">Cargo</label>
+                        <input type="text" id="role" name="role" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="status">Estado</label>
+                        <select id="status" name="status" required>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Fecha de Contratación y Teléfono -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="hire-date">Fecha de Contratación</label>
+                        <input type="date" id="hire-date" name="hire-date">
+                    </div>
+                    <div class="input-group">
+                        <label for="phone">Teléfono</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                </div>
+                <!-- Correo Electrónico y Contraseña -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                </div>
+                <!-- Confirmar Contraseña -->
+                <div class="form-row">
+                    <div class="input-group full-width">
+                        <label for="confirm-password">Confirmar Contraseña</label>
+                        <input type="password" id="confirm-password" name="confirm-password" required>
+                    </div>
+                </div>
+                <!-- Botón de Registro -->
+                <div class="form-row">
+                    <button type="submit" class="btn" id="buttonSignUp">Crear Cuenta</button>
+                </div>
+            </form>
+            <p class="login-link">&iquest;Ya tienes cuenta? <a href="{{ url_for('auth.Login') }}">Inicia sesión</a></p>
+        </div>
     </div>
 </div>
 </body>

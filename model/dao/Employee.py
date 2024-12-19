@@ -15,6 +15,7 @@ class Employee(db.Model):
     telefono = db.Column(db.String(15))
     correo = db.Column(db.String(50))
     password = db.Column(db.String(50))
+    orders = db.relationship('Pedido', backref='pedido', lazy=True)
 
     def __repr__(self):
         return "id: ", self.idd_empleado, " nombre: ", self.nombre, " apellido: ", self.cargo

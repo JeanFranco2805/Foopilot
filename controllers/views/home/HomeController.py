@@ -17,6 +17,7 @@ def addProduct():
 def adminPanel():
     return render_template('welcome/home/Admin.html')
 
+
 @home.route("/employee/mesas")
 def mesasPanel():
     return render_template('welcome/home/Mesas.html')
@@ -35,3 +36,8 @@ def historyPane():
 @home.route("/employee/register")
 def registerEmployee():
     return render_template('welcome/home/Employee.html')
+
+
+@home.route("/employee/orders/add")
+def addOrders():
+    return render_template('welcome/home/forms/OrderForm.html')

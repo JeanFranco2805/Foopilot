@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.stopPropagation();
             if (confirm("¿Estás seguro de que deseas eliminar esta categoría?")) {
                 try {
-                    const response = await fetch(BASE_URL + `/categories/${name}`, {method: "DELETE"});
+                    const response = await fetch(BASE_URL + `/${name}`, {method: "DELETE"});
                     if (response.ok) {
                         block.remove();
                         alert("Categoría eliminada exitosamente.");

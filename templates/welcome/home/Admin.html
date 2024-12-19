@@ -46,21 +46,6 @@
         </div>
 
         <section class="menu-items" id="menu">
-            <!-- Ejemplo de tarjeta existente -->
-            <div class="menu-item">
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Costillas BBQ" class="menu-image" onclick="editImage(this)">
-                <h2 contenteditable="true">Pizza Artesanal</h2>
-                <p contenteditable="true">Masa fresca hecha con frutas</p>
-                <div class="details">
-                    <p><strong>Categoría:</strong> Comida Rápida</p>
-                    <p><strong>ID:</strong> 567</p>
-                </div>
-                <span class="price" contenteditable="true">$10.99</span>
-                <div class="menu-actions">
-                    <button class="edit-btn" onclick="editProduct(this)">Editar</button>
-                    <button class="delete-btn" onclick="deleteProduct(this)">Eliminar</button>
-                </div>
-            </div>
         </section>
         <div class="add-card-container">
             <a id="add-card-btn" class="add-card-btn" href="{{ url_for('home.addProduct') }}" >+</a>

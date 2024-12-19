@@ -1,4 +1,6 @@
 from flask import Flask, render_template
+
+from controllers.api.Orders import pedido_bp
 from model.db import db
 import os
 import psycopg2
@@ -7,7 +9,7 @@ import psycopg2
 app = Flask(__name__, template_folder='templates')
 
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0219@localhost:5432/PuntoFrio'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/PuntoFrio'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar SQLAlchemy
@@ -45,7 +47,7 @@ app.register_blueprint(employee, url_prefix='/api/employee')
 app.register_blueprint(categories_bp, url_prefix='/api/categories')
 app.register_blueprint(product, url_prefix='/api/products')
 app.register_blueprint(mesas_bp, url_prefix='/api/mesas')
-
+app.register_blueprint(pedido_bp, url_prefix='/api/orders')
 # Ruta principal
 @app.route('/')
 def Dashboard():

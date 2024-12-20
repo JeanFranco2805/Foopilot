@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Admin.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ url_for('static', filename='js/AdminPanel.js') }}"></script>
 </head>
 <body>
@@ -25,13 +27,17 @@
         </nav>
 
         <div class="sidebar-profile">
-            <img src="https://via.placeholder.com/50" alt="Foto de perfil">
+            <div class="profile-picture-container">
+                <img id="profile-picture" src="https://via.placeholder.com/50" alt="Foto de perfil">
+                <input type="file" id="profile-picture-input" accept="image/*" style="display: none;">
+            </div>
             <div class="profile-info">
                 <p><strong>Juan Pérez</strong></p>
                 <p>Mesero</p>
             </div>
-            <button class="logout-btn">Cerrar Sesión</button>
+            <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
         </div>
+
     </aside>
 
     <main class="main-content">

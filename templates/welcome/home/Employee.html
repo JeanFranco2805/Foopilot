@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Employee.css') }}">
     <script src="{{ url_for('static', filename='js/Employee.js') }}"></script>
 </head>
@@ -29,7 +31,7 @@
                 <p><strong>Juan Pérez</strong></p>
                 <p>Administrador</p>
             </div>
-            <button class="logout-btn">Cerrar Sesión</button>
+            <button class="logout-btn" id="logoutButton">Cerrar Sesión</button>
         </div>
     </aside>
 
@@ -44,7 +46,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Correo Electrónico</th>
-                    <th>Contraseña</th>
+                    <th>Cargo</th>
                     <th>Estado</th>
                     <th>Opciones</th>
                 </tr>

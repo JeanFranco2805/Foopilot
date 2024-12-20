@@ -48,11 +48,13 @@ app.register_blueprint(categories_bp, url_prefix='/api/categories')
 app.register_blueprint(product, url_prefix='/api/products')
 app.register_blueprint(mesas_bp, url_prefix='/api/mesas')
 app.register_blueprint(pedido_bp, url_prefix='/api/orders')
-# Ruta principal
+app.secret_key = '20050528'
+
+
 @app.route('/')
 def Dashboard():
     return render_template('welcome/Dashboard.html')
 
-# Ejecutar la aplicación
+
 if __name__ == '__main__':
     app.run(port=8080, host='0.0.0.0', debug=True)

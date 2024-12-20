@@ -1,28 +1,12 @@
-const BASE_URL = "http://127.0.0.1:5000/api/categories"
-const BASE_URL_PRODUCTS = "http://127.0.0.1:5000/api/products/productos"
-function editImage(imageElement) {
-    const newUrl = prompt("Ingresa la nueva URL de la imagen:");
-    if (newUrl) {
-        imageElement.src = newUrl;
-    }
-}
-
-function editProduct(buttonElement) {
-    alert("El producto está en modo de edición. Realiza los cambios en los campos disponibles.");
-}
-
-function deleteProduct(buttonElement) {
-    if (confirm("¿Estás seguro de eliminar este producto?")) {
-        const productItem = buttonElement.closest('.menu-item');
-        productItem.remove();
-    }
-}
+const BASE_URL = "http://127.0.0.1:5000/api/categories";
+const BASE_URL_PRODUCTS = "http://127.0.0.1:5000/api/products/productos";
 
 document.addEventListener("DOMContentLoaded", () => {
     const categoriesContainer = document.getElementById("categories");
     const addCategoryBtn = document.getElementById("add-category-btn");
-
-    // Función para crear un bloque de categoría en la UI
+    const profilePicture = document.getElementById("profile-picture");
+    const profilePictureInput = document.getElementById("profile-picture-input");
+    const logoutButton = document.getElementById("logoutBtn")
     const createCategoryBlock = (name = "Nueva Categoría", persistInDB = true) => {
         const block = document.createElement("div");
         block.className = "category-block";
@@ -34,25 +18,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
         deleteBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
-            if (confirm("¿Estás seguro de que deseas eliminar esta categoría?")) {
+            const result = await Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción eliminará la categoría.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+            });
+
+            if (result.isConfirmed) {
                 try {
                     const response = await fetch(BASE_URL + `/${name}`, {method: "DELETE"});
                     if (response.ok) {
                         block.remove();
-                        alert("Categoría eliminada exitosamente.");
+                        Swal.fire("Eliminado", "La categoría fue eliminada exitosamente.", "success");
                     } else {
                         const error = await response.json();
-                        alert(`Error al eliminar la categoría: ${error.error}`);
+                        Swal.fire("Error", `Error al eliminar la categoría: ${error.error}`, "error");
                     }
                 } catch (err) {
-                    alert("Error al conectar con el servidor.");
+                    Swal.fire("Error", "Error al conectar con el servidor.", "error");
                 }
             }
         });
 
         block.addEventListener("dblclick", async () => {
-            const newName = prompt("Editar nombre de la categoría:", block.textContent);
-            if (newName !== null && newName.trim() !== "") {
+            const {value: newName} = await Swal.fire({
+                title: "Editar categoría",
+                input: "text",
+                inputLabel: "Nuevo nombre de la categoría",
+                inputValue: block.textContent,
+                showCancelButton: true,
+                confirmButtonText: "Guardar",
+                cancelButtonText: "Cancelar",
+                inputValidator: (value) => {
+                    if (!value.trim()) {
+                        return "El nombre no puede estar vacío";
+                    }
+                },
+            });
+
+            if (newName) {
                 try {
                     const response = await fetch(BASE_URL + `/${name}`, {
                         method: "PUT",
@@ -63,13 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (response.ok) {
                         block.textContent = newName.trim();
                         block.appendChild(deleteBtn);
-                        alert("Categoría actualizada exitosamente.");
+                        Swal.fire("Actualizado", "La categoría fue actualizada exitosamente.", "success");
                     } else {
                         const error = await response.json();
-                        alert(`Error al actualizar la categoría: ${error.error}`);
+                        Swal.fire("Error", `Error al actualizar la categoría: ${error.error}`, "error");
                     }
                 } catch (err) {
-                    alert("Error al conectar con el servidor.");
+                    Swal.fire("Error", "Error al conectar con el servidor.", "error");
                 }
             }
         });
@@ -92,13 +99,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
                 const error = await response.json();
-                alert(`Error al agregar la categoría: ${error.error}`);
+                Swal.fire("Error", `Error al agregar la categoría: ${error.error}`, "error");
                 return false;
             }
-            alert("Categoría agregada exitosamente.");
+            Swal.fire("Éxito", "Categoría agregada exitosamente.", "success");
             return true;
         } catch (err) {
-            alert("Error al conectar con el servidor.");
+            Swal.fire("Error", "Error al conectar con el servidor.", "error");
             return false;
         }
     };
@@ -109,23 +116,38 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 const categories = await response.json();
                 categories.forEach((category) => {
-                    createCategoryBlock(category.nombre_categoria, false); // No persistimos en la BD al cargar
+                    createCategoryBlock(category.nombre_categoria, false);
                 });
             } else {
                 const error = await response.json();
-                alert(`Error al cargar categorías: ${error.error}`);
+                Swal.fire("Error", `Error al cargar categorías: ${error.error}`, "error");
             }
         } catch (err) {
-            alert("Error al conectar con el servidor.");
+            Swal.fire("Error", "Error al conectar con el servidor.", "error");
         }
     };
 
-    addCategoryBtn.addEventListener("click", () => {
-        const categoryName = prompt("Nombre de la nueva categoría:");
-        if (categoryName && categoryName.trim() !== "") {
+    addCategoryBtn.addEventListener("click", async () => {
+        const {value: categoryName} = await Swal.fire({
+            title: "Nueva categoría",
+            input: "text",
+            inputLabel: "Nombre de la categoría",
+            inputPlaceholder: "Ingresa el nombre",
+            showCancelButton: true,
+            confirmButtonText: "Agregar",
+            cancelButtonText: "Cancelar",
+            inputValidator: (value) => {
+                if (!value.trim()) {
+                    return "El nombre no puede estar vacío";
+                }
+            },
+        });
+
+        if (categoryName) {
             createCategoryBlock(categoryName.trim());
         }
     });
+
     async function loadProducts() {
         const menuContainer = document.getElementById("menu");
 
@@ -143,34 +165,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.className = "menu-item";
                 div.setAttribute("data-id", product.id);
 
-                // Imagen
                 const img = document.createElement("img");
                 img.src = product.imagen || "https://via.placeholder.com/150";
                 img.className = "menu-image";
                 img.alt = product.nombre;
 
-                // Nombre del producto (editable)
                 const nameField = document.createElement("h2");
                 nameField.textContent = product.nombre;
                 nameField.onclick = () => toggleInput(nameField);
 
-                // ID de la categoría (editable)
                 const categoryField = document.createElement("p");
                 categoryField.textContent = `Categoría: ${product.categoria_id}`;
                 categoryField.onclick = () => toggleInput(categoryField);
 
-                // Precio (editable)
                 const priceField = document.createElement("span");
                 priceField.className = "price";
                 priceField.textContent = `$${product.precio}`;
                 priceField.onclick = () => toggleInput(priceField);
 
-                // ID del producto (no editable, solo display)
                 const details = document.createElement("div");
                 details.className = "details";
                 details.innerHTML = `<p><strong>ID:</strong> ${product.id}</p>`;
 
-                // Botones de acción
                 const menuActions = document.createElement("div");
                 menuActions.className = "menu-actions";
 
@@ -182,15 +198,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const deleteBtn = document.createElement("button");
                 deleteBtn.className = "delete-btn";
                 deleteBtn.textContent = "Eliminar";
-                deleteBtn.onclick = () => {
-                    const productId = div.getAttribute("data-id");
-                    deleteProduct(deleteBtn, productId);
-                };
+                deleteBtn.onclick = () => deleteProduct(deleteBtn, product.id);
 
                 menuActions.appendChild(editBtn);
                 menuActions.appendChild(deleteBtn);
 
-                // Estructurar tarjeta
                 div.appendChild(img);
                 div.appendChild(nameField);
                 div.appendChild(categoryField);
@@ -202,11 +214,21 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error("Error al cargar los productos:", error);
-            alert("No se pudieron cargar los productos.");
+            Swal.fire("Error", "No se pudieron cargar los productos.", "error");
         }
     }
+
     async function deleteProduct(buttonElement, productId) {
-        if (confirm("¿Estás seguro de eliminar este producto?")) {
+        const result = await Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará el producto.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
             try {
                 const response = await fetch(`${BASE_URL_PRODUCTS}/${productId}`, {
                     method: "DELETE",
@@ -215,66 +237,66 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     const productItem = buttonElement.closest('.menu-item');
                     productItem.remove();
-                    alert("Producto eliminado exitosamente.");
+                    Swal.fire("Eliminado", "El producto fue eliminado exitosamente.", "success");
                 } else {
                     const error = await response.json();
-                    alert(`Error al eliminar el producto: ${error.error}`);
+                    Swal.fire("Error", `Error al eliminar el producto: ${error.error}`, "error");
                 }
             } catch (error) {
                 console.error("Error al eliminar el producto:", error);
-                alert("No se pudo conectar con el servidor. Inténtalo más tarde.");
+                Swal.fire("Error", "No se pudo conectar con el servidor. Inténtalo más tarde.", "error");
             }
         }
     }
-// Función para convertir un campo en input
-    function toggleInput(element) {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = element.textContent.replace(/[^0-9.]/g, "").trim(); // Eliminar $ y espacios
-        input.onblur = () => {
-            element.textContent = input.value;
-            input.replaceWith(element);
-        };
-        element.replaceWith(input);
-        input.focus();
-    }
 
-// Función para actualizar un producto en la base de datos
-    async function updateProduct(div, nameField, categoryField, priceField) {
-        const productId = div.getAttribute("data-id");
-        const newName = nameField.textContent.trim();
-        const newCategoryId = categoryField.textContent.replace("Categoría: ", "").trim();
-        const newPrice = parseFloat(priceField.textContent.replace("$", "").trim());
+    profilePicture.addEventListener("click", () => {
+        profilePictureInput.click();
+    });
 
-        if (!newName || isNaN(newCategoryId) || isNaN(newPrice)) {
-            alert("Los datos no son válidos.");
-            return;
+    profilePictureInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                profilePicture.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
         }
+    });
+    logoutButton.addEventListener("click", async () => {
+        const result = await Swal.fire({
+            title: "¿Cerrar sesión?",
+            text: "¿Estás seguro de que deseas cerrar sesión?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar sesión",
+            cancelButtonText: "Cancelar",
+        });
 
-        try {
-            const response = await fetch(`${BASE_URL_PRODUCTS}/${productId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    nombre: newName,
-                    categoria_id: parseInt(newCategoryId),
-                    precio: newPrice,
-                }),
-            });
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
 
-            if (response.ok) {
-                alert("Producto actualizado exitosamente.");
-            } else {
-                const error = await response.json();
-                alert(`Error al actualizar el producto: ${error.error}`);
+                if (response.ok) {
+                    Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
+                        window.location.href = location.href
+                    });
+                } else {
+                    const error = await response.json();
+                    Swal.fire("Error", `No se pudo cerrar la sesión: ${error.message}`, "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Error al intentar cerrar sesión. Inténtalo más tarde.", "error");
+                console.error("Error al cerrar sesión:", error);
             }
-        } catch (error) {
-            console.error("Error al actualizar el producto:", error);
-            alert("Error al actualizar el producto.");
         }
-    }
-    loadProducts()
+    });
+
+    loadProducts();
     loadCategoriesFromDB();
 });

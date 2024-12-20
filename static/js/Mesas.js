@@ -1,6 +1,7 @@
 window.onload = () => {
     const menuItems = document.querySelector('.menu-items');
     const addCardBtn = document.getElementById('add-card-btn');
+    const logoutButton = document.getElementById("logoutButton");
 
     // Función para cargar mesas desde el backend
     function loadTables() {
@@ -35,12 +36,12 @@ window.onload = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevaMesa)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
-            loadTables(); // Recargar las mesas después de insertar
-        })
-        .catch(error => console.error("Error al insertar la mesa:", error));
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                loadTables(); // Recargar las mesas después de insertar
+            })
+            .catch(error => console.error("Error al insertar la mesa:", error));
     });
 
     // Manejo de eventos en el contenedor de mesas
@@ -63,20 +64,66 @@ window.onload = () => {
         // Manejar el botón "Eliminar"
         if (event.target.classList.contains('delete-btn')) {
             const mesaId = card.getAttribute('data-id'); // Obtener ID de la mesa
-            fetch(`/api/mesas/delete/${mesaId}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        console.log(data.message);
-                        loadTables(); // Recargar mesas después de eliminar
-                    } else {
-                        console.error("Error:", data.error);
-                    }
-                })
-                .catch(error => console.error("Error al eliminar la mesa:", error));
+
+            Swal.fire({
+                title: "¿Eliminar mesa?",
+                text: "¿Estás seguro de que deseas eliminar esta mesa?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/api/mesas/delete/${mesaId}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                Swal.fire("Éxito", "Mesa eliminada exitosamente.", "success");
+                                loadTables(); // Recargar mesas después de eliminar
+                            } else {
+                                Swal.fire("Error", "No se pudo eliminar la mesa.", "error");
+                                console.error("Error:", data.error);
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire("Error", "Error al conectar con el servidor.", "error");
+                            console.error("Error al eliminar la mesa:", error);
+                        });
+                }
+            });
         }
     });
+    logoutButton.addEventListener("click", async () => {
+        const result = await Swal.fire({
+            title: "¿Cerrar sesión?",
+            text: "¿Estás seguro de que deseas cerrar sesión?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar sesión",
+            cancelButtonText: "Cancelar",
+        });
 
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
+
+                if (response.ok) {
+                    Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
+                        window.location.href=  location.href
+                    });
+                } else {
+                    const error = await response.json();
+                    Swal.fire("Error", `No se pudo cerrar la sesión: ${error.message}`, "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Error al intentar cerrar sesión. Inténtalo más tarde.", "error");
+                console.error("Error al cerrar sesión:", error);
+            }
+        }
+    });
     // Cargar mesas al iniciar la página
     loadTables();
 };

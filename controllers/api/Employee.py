@@ -1,12 +1,17 @@
-from flask import Flask, request, jsonify, Blueprint
 from datetime import datetime
+
+from flask import Flask, request, jsonify, Blueprint
 from flask import Blueprint, jsonify, request
+from werkzeug.security import check_password_hash, generate_password_hash
+import jwt
+from flask import session
+
 from model.dao.Employee import Employee, db
 
 app = Flask(__name__)
 employee = Blueprint("employee", __name__)
 emp = Employee()
-session = db.session
+SECRET_KEY = "20050528"
 
 
 @employee.route("/all", methods=["GET"])
@@ -58,23 +63,36 @@ def login_employee():
     data = request.json
 
     if not data or "email" not in data or "password" not in data:
-        return jsonify({"error": "Email y password son requeridos"}), 400
+        return jsonify({"error": "Email y contraseña son requeridos"}), 400
 
     email = data["email"]
     password = data["password"]
 
     empleado = Employee.query.filter_by(correo=email).first()
 
-    if not empleado or empleado.password != password:  # Aquí puedes agregar hash comparativo si es necesario.
-        return jsonify({"error": "Credenciales incorrectas"}), 401
+    if not empleado or not check_password_hash(empleado.password, password):
+        return jsonify({"error": "Credenciales inválidas"}), 401
+
+    import datetime
+    token = jwt.encode({
+        "id": empleado.id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)  # El token expira en 24 horas
+    }, SECRET_KEY, algorithm="HS256")
+
+    session['user_id'] = empleado.id
+    session['role'] = empleado.cargo
 
     return jsonify({
         "message": "Inicio de sesión exitoso",
-        "id": empleado.id,
-        "nombre": empleado.nombre,
-        "apellido": empleado.apellido
+        "token": token,
+        "user": {
+            "id": empleado.id,
+            "nombre": empleado.nombre,
+            "apellido": empleado.apellido,
+            "email": empleado.correo,
+            "cargo": empleado.cargo
+        }
     }), 200
-
 
 
 @employee.route("/add", methods=["POST"])
@@ -102,7 +120,7 @@ def add_employee():
             fecha_contratacion=fecha_contratacion,
             telefono=data["telefono"],
             correo=data["correo"],
-            password=data["password"]
+            password=generate_password_hash(data["password"])
         )
         db.session.add(nuevo_empleado)
         db.session.commit()

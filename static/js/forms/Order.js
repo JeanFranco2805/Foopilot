@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarTotal();
         } catch (error) {
             console.error("Error al cargar productos:", error.message);
-            alert("❌ No se pudieron cargar los productos.");
+            Swal.fire("Error", "❌ No se pudieron cargar los productos.", "error");
         }
     }
 
@@ -119,18 +119,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 const result = await response.json();
-                alert(`✅ Pedido insertado con éxito. ID: ${result.id_pedido}`);
+                Swal.fire({
+                    title: "Éxito",
+                    text: `✅ Pedido insertado con éxito. ID: ${result.id_pedido}`,
+                    icon: "success",
+                    confirmButtonText: "Aceptar"
+                });
                 form.reset();
                 totalDisplay.textContent = "Total del Pedido: $0.00";
             } else {
                 const error = await response.json();
-                alert(`❌ Error: ${error.error || "No se pudo insertar el pedido."}`);
+                Swal.fire("Error", `❌ ${error.error || "No se pudo insertar el pedido."}`, "error");
             }
         } catch (err) {
             console.error("Error al enviar la solicitud:", err.message);
-            alert("❌ Error al insertar el pedido.");
+            Swal.fire("Error", "❌ Error al insertar el pedido.", "error");
         }
     });
+
     async function cargarEmpleados() {
         try {
             const response = await fetch("http://127.0.0.1:5000/api/employee/all");
@@ -147,9 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error("Error al cargar empleados:", error.message);
-            alert("❌ No se pudieron cargar los empleados. Verifique la conexión al servidor.");
+            Swal.fire("Error", "❌ No se pudieron cargar los empleados. Verifique la conexión al servidor.", "error");
         }
     }
-    cargarEmpleados()
+
+    cargarEmpleados();
     cargarProductos();
 });

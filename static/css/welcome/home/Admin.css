@@ -6,7 +6,7 @@ body, html {
     width: 100%;
     display: flex;
     overflow: hidden;
-    background-color: #ecf0f1;
+    background-color: #f3f6f9;
 }
 
 .admin-container {
@@ -14,6 +14,49 @@ body, html {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+}
+
+.sidebar {
+    width: 270px;
+    background-color: #3b4d61;
+    color: #dfe6ed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    margin: 15px 0;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: #dfe6ed;
+    font-size: 1rem;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #4f657d;
+}
+
+.sidebar nav ul li a.active {
+    color: #a7c1d1;
 }
 
 .sidebar {
@@ -67,13 +110,8 @@ body, html {
     padding: 10px 15px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    transition: all 0.3s ease;
     gap: 10px;
-}
-
-.sidebar-profile:hover {
-    transform: scale(1.02);
+    transition: all 0.3s ease;
 }
 
 .sidebar-profile img {
@@ -85,21 +123,15 @@ body, html {
 }
 
 .sidebar-profile .profile-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
     flex-grow: 1;
     max-width: 70%;
     color: white;
-    margin-right: 10px;
-    line-height: 1.1;
 }
 
 .sidebar-profile .profile-info p:first-child {
     font-weight: bold;
     color: #f1c40f;
-    margin: -2px 0 0 0;
+    margin: 0;
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
@@ -112,24 +144,6 @@ body, html {
     margin: 0;
 }
 
-.sidebar-title {
-    padding: 10px 15px;
-    text-align: center;
-    background-color: #2c3e50;
-    border-radius: 5px;
-    color: #ecf0f1;
-    font-size: 1rem;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: -70px 0 -85px;
-}
-
-.sidebar-title h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #f1c40f;
-}
-
 .logout-btn {
     background-color: #e74c3c;
     color: white;
@@ -139,8 +153,6 @@ body, html {
     font-size: 0.8rem;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    align-self: center;
 }
 
 .logout-btn:hover {
@@ -148,10 +160,11 @@ body, html {
     transform: scale(1.05);
 }
 
+
 .main-content {
     flex-grow: 1;
     padding: 20px;
-    background-color: #ecf0f1;
+    background-color: #f3f6f9;
     overflow-y: auto;
     box-sizing: border-box;
     margin: 0;
@@ -160,7 +173,7 @@ body, html {
 .main-content header {
     margin-bottom: 20px;
     text-align: center;
-    color: #2c3e50;
+    color: #3b4d61;
 }
 
 .main-content .menu-items {
@@ -170,9 +183,9 @@ body, html {
 }
 
 .menu-item {
-    background: #fdf5e6;
+    background: #ffffff;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #d3d8df;
     border-radius: 10px;
     text-align: center;
     position: relative;
@@ -201,8 +214,8 @@ body, html {
 }
 
 .edit-btn {
-    background-color: #27ae60;
-    color: white;
+    background-color: #58a36d;
+    color: #ffffff;
     padding: 10px 20px;
     border-radius: 5px;
     border: none;
@@ -211,12 +224,12 @@ body, html {
 }
 
 .edit-btn:hover {
-    background-color: #229954;
+    background-color: #479459;
 }
 
 .delete-btn {
-    background-color: #e74c3c;
-    color: white;
+    background-color: #e86c60;
+    color: #ffffff;
     padding: 10px 20px;
     border-radius: 5px;
     border: none;
@@ -225,23 +238,23 @@ body, html {
 }
 
 .delete-btn:hover {
-    background-color: #c0392b;
+    background-color: #cc5b52;
 }
 
 .category-menu-container {
-    background-color: #34495e;
+    background-color: #4f657d;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    color: #ecf0f1;
+    color: #f3f6f9;
     text-align: center;
 }
 
 .category-menu-container h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    color: #f1c40f;
+    color: #a7c1d1;
 }
 
 #categories {
@@ -253,13 +266,13 @@ body, html {
 }
 
 .category-block {
-    background-color: #fdf5e6;
+    background-color: #ffffff;
     padding: 10px 15px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     font-weight: bold;
-    color: #34495e;
+    color: #4f657d;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.3s ease;
     min-width: 120px;
@@ -269,21 +282,15 @@ body, html {
 
 .category-block:hover {
     transform: scale(1.05);
-    background-color: #f1c40f;
-    color: #2c3e50;
-}
-
-.category-block:focus {
-    outline: none;
-    background-color: #f1c40f;
-    color: #34495e;
+    background-color: #a7c1d1;
+    color: #ffffff;
 }
 
 .add-category-btn {
     margin-top: 15px;
     padding: 10px 20px;
-    background-color: #27ae60;
-    color: white;
+    background-color: #58a36d;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -291,45 +298,10 @@ body, html {
 }
 
 .add-category-btn:hover {
-    background-color: #229954;
+    background-color: #479459;
     transform: scale(1.05);
 }
 
-.delete-category-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px;
-    font-size: 0.8rem;
-    border-radius: 50%;
-    cursor: pointer;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    opacity: 0;
-    visibility: hidden;
-}
-
-.delete-category-btn:hover {
-    background-color: #c0392b;
-    transform: scale(1.1);
-}
-
-.category-block:hover .delete-category-btn {
-    opacity: 1;
-    visibility: visible;
-}
-.details {
-    margin-top: 8px;
-    font-size: 14px;
-    color: #555;
-}
-
-.details p {
-    margin: 2px 0;
-}
 .add-card-container {
     position: fixed;
     bottom: 30px;
@@ -346,7 +318,7 @@ body, html {
     align-items: center;
     width: 60px;
     height: 60px;
-    background-color: #28a745;
+    background-color: #58a36d;
     color: white;
     font-size: 32px;
     font-weight: bold;
@@ -359,7 +331,7 @@ body, html {
 }
 
 .add-card-btn:hover {
-    background-color: #218838;
+    background-color: #479459;
     transform: scale(1.1);
 }
 
@@ -367,42 +339,67 @@ body, html {
     transform: scale(0.95);
 }
 
-@media (max-width: 768px) {
-    .add-card-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 28px;
-    }
-    .add-card-container {
-        bottom: 20px;
-        right: 20px;
-    }
+.profile-picture-container {
+    position: relative;
+    width: 75px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dfe6ed;
 }
 
-@media (max-width: 480px) {
-    .add-card-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 24px;
-    }
-    .add-card-container {
-        bottom: 15px;
-        right: 15px;
-    }
+.profile-picture-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
-@media (max-width: 768px) {
-    .add-card-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 28px;
-    }
+.delete-category-btn {
+    background-color: #e86c60;
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-@media (max-width: 480px) {
-    .add-card-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 24px;
-    }
+.delete-category-btn:hover {
+    background-color: #cc5b52;
+    transform: scale(1.1);
+}
+
+.delete-category-btn:active {
+    transform: scale(0.95);
+}
+.sidebar-title {
+    padding: 10px 15px;
+    text-align: center;
+    background-color: #2c3e50;
+    border-radius: 5px;
+    color: #ecf0f1;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: -70px 0 -85px;
+}
+
+.sidebar-title h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #f1c40f;
 }

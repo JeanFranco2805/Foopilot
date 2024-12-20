@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector(".orders-table tbody");
+    const logoutButton = document.getElementById("logoutButton");
 
     async function cargarPedidos() {
         try {
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error("Error al cargar los pedidos:", error.message);
-            alert("❌ No se pudieron cargar los pedidos. Verifique la conexión.");
+            Swal.fire("Error", "❌ No se pudieron cargar los pedidos. Verifique la conexión.", "error");
         }
     }
 
@@ -70,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const estado = fila.children[5].innerText.trim();
 
         if (isNaN(parseFloat(Total))) {
-            alert("❌ El campo Total debe ser un número válido.");
+            Swal.fire("Error", "❌ El campo Total debe ser un número válido.", "error");
             return;
         }
 
@@ -90,15 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (response.ok) {
-                alert("✅ Pedido actualizado exitosamente");
+                Swal.fire("Éxito", "✅ Pedido actualizado exitosamente.", "success");
                 cargarPedidos();
             } else {
                 const error = await response.json();
-                alert(`❌ Error: ${error.message}`);
+                Swal.fire("Error", `❌ ${error.message}`, "error");
             }
         } catch (error) {
             console.error("Error al actualizar el pedido:", error.message);
-            alert("❌ No se pudo actualizar el pedido.");
+            Swal.fire("Error", "❌ No se pudo actualizar el pedido.", "error");
         }
     };
 
@@ -106,27 +107,67 @@ document.addEventListener("DOMContentLoaded", () => {
         const fila = boton.closest("tr");
         const idPedido = fila.dataset.idPedido;
 
-        if (!confirm(`¿Estás seguro de que deseas eliminar el pedido con ID ${idPedido}?`)) {
-            return;
-        }
+        Swal.fire({
+            title: "¿Eliminar pedido?",
+            text: `¿Estás seguro de que deseas eliminar el pedido con ID ${idPedido}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5000/api/orders/eliminar/${idPedido}`, {
+                        method: "DELETE",
+                    });
 
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/api/orders/eliminar/${idPedido}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                alert("✅ Pedido eliminado exitosamente");
-                fila.remove();
-            } else {
-                const error = await response.json();
-                alert(`❌ Error al eliminar el pedido: ${error.message}`);
+                    if (response.ok) {
+                        Swal.fire("Éxito", "✅ Pedido eliminado exitosamente.", "success");
+                        fila.remove();
+                    } else {
+                        const error = await response.json();
+                        Swal.fire("Error", `❌ ${error.message}`, "error");
+                    }
+                } catch (error) {
+                    console.error("Error al eliminar el pedido:", error.message);
+                    Swal.fire("Error", "❌ No se pudo eliminar el pedido.", "error");
+                }
             }
-        } catch (error) {
-            console.error("Error al eliminar el pedido:", error.message);
-            alert("❌ No se pudo eliminar el pedido.");
-        }
+        });
     };
+    logoutButton.addEventListener("click", async () => {
+        const result = await Swal.fire({
+            title: "¿Cerrar sesión?",
+            text: "¿Estás seguro de que deseas cerrar sesión?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar sesión",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
+
+                if (response.ok) {
+                    Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
+                       window.location.href=  location.href
+                    });
+                } else {
+                    const error = await response.json();
+                    Swal.fire("Error", `No se pudo cerrar la sesión: ${error.message}`, "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Error al intentar cerrar sesión. Inténtalo más tarde.", "error");
+                console.error("Error al cerrar sesión:", error);
+            }
+        }
+    });
+
+
 
     cargarPedidos();
 });

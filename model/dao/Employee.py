@@ -9,7 +9,7 @@ class Employee(db.Model):
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(50))
     apellido = db.Column(db.String(50))
-    cargo = db.Column(db.String(50))
+    cargo = db.Column(db.Text)
     estado = db.Column(db.String(10))
     fecha_contratacion = db.Column(db.Date())
     telefono = db.Column(db.String(15))

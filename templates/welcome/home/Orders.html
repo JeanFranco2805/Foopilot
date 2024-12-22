@@ -40,7 +40,7 @@
             <h1>Gestión de Pedidos</h1>
         </header>
         <div class="table-container">
-            <a class="add-btn" href="{{ url_for('home.addOrders') }}" >Insertar Nuevo Pedido</a>
+            <a class="add-btn" href="{{ url_for('home.addOrders') }}">Insertar Nuevo Pedido</a>
             <table class="orders-table">
                 <thead>
                 <tr>
@@ -60,5 +60,17 @@
         </div>
     </main>
 </div>
+
+<!-- Modal para detalles del pedido -->
+<div id="detallesModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Detalles del Pedido</h2>
+        <div class="modal-body">
+            <!-- Los detalles del pedido se llenarán dinámicamente -->
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

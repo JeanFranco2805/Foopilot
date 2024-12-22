@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector(".orders-table tbody");
     const logoutButton = document.getElementById("logoutButton");
+    const modal = document.querySelector("#detallesModal"); // Modal para detalles del pedido
 
     async function cargarPedidos() {
         try {
@@ -27,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td ondblclick="hacerEditable(this, 'fecha_hora')">${pedido.fecha_hora}</td>
                     <td ondblclick="hacerEditable(this, 'estado')">${pedido.estado}</td>
                     <td>
-                        <button class="details-btn" onclick="verDetalles(${pedido.id_pedido})">Ver Detalles</button>
+                        <button class="details-btn ver-detalles-btn" data-id="${pedido.id_pedido}">Ver Detalles</button>
                     </td>
                     <td>
                         <div class="actions-container">
@@ -135,6 +136,42 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     };
+
+    // Función para manejar el botón "Ver Detalles"
+    tableBody.addEventListener("click", function (event) {
+        if (event.target.classList.contains("ver-detalles-btn")) {
+            const idPedido = event.target.dataset.id;
+
+            // Solicitud al backend
+            fetch(`/api/orders/details/${idPedido}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire("Error", data.error, "error");
+                    } else {
+                        mostrarDetallesPedido(data);
+                    }
+                })
+                .catch(error => console.error("Error al obtener detalles del pedido:", error));
+        }
+    });
+
+    // Función para mostrar detalles en el modal
+    function mostrarDetallesPedido(detalles) {
+        modal.querySelector(".modal-body").innerHTML = `
+            <p><strong>ID Pedido:</strong> ${detalles.id_pedido}</p>
+            <p><strong>Fecha:</strong> ${detalles.fecha_hora}</p>
+            <p><strong>Estado:</strong> ${detalles.estado}</p>
+            <p><strong>Total:</strong> $${detalles.total}</p>
+        `;
+        modal.style.display = "block"; // Mostrar el modal
+    }
+
+    // Cerrar modal
+    modal.querySelector(".close").addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
     logoutButton.addEventListener("click", async () => {
         const result = await Swal.fire({
             title: "¿Cerrar sesión?",
@@ -154,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (response.ok) {
                     Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
-                       window.location.href=  location.href
+                        window.location.href = location.href;
                     });
                 } else {
                     const error = await response.json();
@@ -167,7 +204,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-
-    cargarPedidos();
+    cargarPedidos(); // Cargar pedidos al iniciar
 });

@@ -6,7 +6,31 @@ from datetime import datetime
 
 pedido_bp = Blueprint('pedido_bp', __name__)
 
+# Obtener detalles de un pedido por ID
+@pedido_bp.route('/details/<int:id_pedido>', methods=['GET'])
+def obtener_detalles_pedido(id_pedido):
+    try:
+        pedido = Pedido.query.get(id_pedido)
 
+        if not pedido:
+            return jsonify({"error": "Pedido no encontrado"}), 404
+
+        detalles = {
+            "id_pedido": pedido.id_pedido,
+            "fecha_hora": pedido.fecha_hora.strftime("%Y-%m-%d %H:%M:%S") if pedido.fecha_hora else None,
+            "fecha_hora_despacho": pedido.fecha_hora_despacho.strftime("%Y-%m-%d %H:%M:%S") if pedido.fecha_hora_despacho else None,
+            "id_mesa": pedido.id_mesa,
+            "id_empleado": pedido.id_empleado,
+            "estado": pedido.estado,
+            "total": pedido.Total
+        }
+
+        return jsonify(detalles), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Buscar pedidos por ID de mesa
 @pedido_bp.route('/buscar/<int:id_mesa>', methods=['GET'])
 def buscar_pedidos(id_mesa):
     try:
@@ -30,6 +54,7 @@ def buscar_pedidos(id_mesa):
         return jsonify({"error": str(e)}), 500
 
 
+# Insertar un nuevo pedido
 @pedido_bp.route('/insertar', methods=['POST'])
 def insertar_pedido():
     try:
@@ -59,6 +84,7 @@ def insertar_pedido():
         return jsonify({"error": str(e)}), 500
 
 
+# Obtener todos los pedidos
 @pedido_bp.route('/all', methods=['GET'])
 def obtener_todos_pedidos():
     try:
@@ -87,6 +113,7 @@ def obtener_todos_pedidos():
         return jsonify({"error": f"Error al obtener pedidos: {str(e)}"}), 500
 
 
+# Actualizar un pedido
 @pedido_bp.route('/actualizar/<int:pedido_id>', methods=['PUT'])
 def actualizar_pedido(pedido_id):
     try:
@@ -119,6 +146,7 @@ def actualizar_pedido(pedido_id):
         return jsonify({"error": str(e)}), 500
 
 
+# Eliminar un pedido
 @pedido_bp.route('/eliminar/<int:pedido_id>', methods=['DELETE'])
 def eliminar_pedido(pedido_id):
     try:

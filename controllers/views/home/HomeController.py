@@ -37,43 +37,43 @@ def Home():
 
 
 @home.route("/employee/product")
-@login_required
+#@login_required
 def addProduct():
     return render_template('welcome/home/forms/ProductsToMenu.html')
 
 
 @home.route("/employee/admin")
-@login_required
+#@login_required
 def adminPanel():
     return render_template('welcome/home/Admin.html')
 
 
 @home.route("/employee/mesas")
-@login_required
+#@login_required
 def mesasPanel():
     return render_template('welcome/home/Mesas.html')
 
 
 @home.route('/employee/orders')
-@login_required
+#@login_required
 def ordersPanel():
     return render_template('welcome/home/Orders.html')
 
 
 @home.route("/employee/history")
-@login_required
+#@login_required
 def historyPane():
     return render_template('welcome/home/Historial.html')
 
 
 @home.route("/employee/register")
-@login_required
+#@login_required
 def registerEmployee():
     return render_template('welcome/home/Employee.html')
 
 
 @home.route("/employee/orders/add")
-@login_required
+#@login_required
 def addOrders():
     return render_template('welcome/home/forms/OrderForm.html')
 

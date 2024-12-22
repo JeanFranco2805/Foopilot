@@ -45,98 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    window.hacerEditable = function (celda, campo) {
-        const valorActual = celda.innerText.replace("$", "").trim();
-        celda.innerHTML = `<input type="text" value="${valorActual}" data-campo="${campo}" class="editable-input">`;
-        const input = celda.querySelector("input");
-        input.focus();
-
-        input.addEventListener("blur", () => {
-            const nuevoValor = parseFloat(input.value.trim().replace(",", "."));
-            if (!isNaN(nuevoValor)) {
-                celda.innerText = `$${nuevoValor.toFixed(2)}`;
-            } else {
-                celda.innerText = "$0.00";
-            }
-        });
-    };
-
-    window.actualizarFila = async function (boton) {
-        const fila = boton.closest("tr");
-        const idPedido = fila.dataset.idPedido;
-
-        const id_mesa = fila.children[1].innerText.trim();
-        const mesero = fila.children[2].innerText.trim();
-        const Total = fila.children[3].innerText.replace("$", "").replace(",", ".").trim();
-        const fecha_hora = fila.children[4].innerText.trim();
-        const estado = fila.children[5].innerText.trim();
-
-        if (isNaN(parseFloat(Total))) {
-            Swal.fire("Error", "❌ El campo Total debe ser un número válido.", "error");
-            return;
-        }
-
-        const datosActualizados = {
-            id_mesa,
-            mesero,
-            Total: parseFloat(Total),
-            fecha_hora,
-            estado
-        };
-
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/api/orders/actualizar/${idPedido}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datosActualizados)
-            });
-
-            if (response.ok) {
-                Swal.fire("Éxito", "✅ Pedido actualizado exitosamente.", "success");
-                cargarPedidos();
-            } else {
-                const error = await response.json();
-                Swal.fire("Error", `❌ ${error.message}`, "error");
-            }
-        } catch (error) {
-            console.error("Error al actualizar el pedido:", error.message);
-            Swal.fire("Error", "❌ No se pudo actualizar el pedido.", "error");
-        }
-    };
-
-    window.eliminarPedido = async function (boton) {
-        const fila = boton.closest("tr");
-        const idPedido = fila.dataset.idPedido;
-
-        Swal.fire({
-            title: "¿Eliminar pedido?",
-            text: `¿Estás seguro de que deseas eliminar el pedido con ID ${idPedido}?`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const response = await fetch(`http://127.0.0.1:5000/api/orders/eliminar/${idPedido}`, {
-                        method: "DELETE",
-                    });
-
-                    if (response.ok) {
-                        Swal.fire("Éxito", "✅ Pedido eliminado exitosamente.", "success");
-                        fila.remove();
-                    } else {
-                        const error = await response.json();
-                        Swal.fire("Error", `❌ ${error.message}`, "error");
-                    }
-                } catch (error) {
-                    console.error("Error al eliminar el pedido:", error.message);
-                    Swal.fire("Error", "❌ No se pudo eliminar el pedido.", "error");
-                }
-            }
-        });
-    };
-
     // Función para manejar el botón "Ver Detalles"
     tableBody.addEventListener("click", function (event) {
         if (event.target.classList.contains("ver-detalles-btn")) {
@@ -158,11 +66,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Función para mostrar detalles en el modal
     function mostrarDetallesPedido(detalles) {
-        modal.querySelector(".modal-body").innerHTML = `
+        const modalBody = modal.querySelector(".modal-body");
+
+        // Crear el contenido dinámico para los productos
+        let productosHTML = detalles.productos.map(producto => `
+            <p><strong>${producto.nombre}</strong> - 
+            Cantidad: ${producto.cantidad}, 
+            Precio unitario: $${producto.precio_unitario.toFixed(2)}, 
+            Subtotal: $${producto.subtotal.toFixed(2)}</p>
+        `).join("");
+
+        // Llenar el contenido del modal
+        modalBody.innerHTML = `
             <p><strong>ID Pedido:</strong> ${detalles.id_pedido}</p>
             <p><strong>Fecha:</strong> ${detalles.fecha_hora}</p>
             <p><strong>Estado:</strong> ${detalles.estado}</p>
-            <p><strong>Total:</strong> $${detalles.total}</p>
+            <p><strong>Total:</strong> $${detalles.total.toFixed(2)}</p>
+            <h3>Productos:</h3>
+            ${productosHTML}
         `;
         modal.style.display = "block"; // Mostrar el modal
     }

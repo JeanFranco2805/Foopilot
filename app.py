@@ -60,6 +60,7 @@ app.register_blueprint(product, url_prefix='/api/products')
 app.register_blueprint(mesas_bp, url_prefix='/api/mesas')
 app.register_blueprint(pedido_bp, url_prefix='/api/orders')
 
+
 # Clave secreta para sesiones
 app.secret_key = '20050528'
 

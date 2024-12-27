@@ -1,6 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, Date
-
 from model.db import db
 
 
@@ -12,12 +9,11 @@ class Employee(db.Model):
     cargo = db.Column(db.Text)
     estado = db.Column(db.String(10))
     fecha_contratacion = db.Column(db.Date())
-    telefono = db.Column(db.String(15))
     correo = db.Column(db.String(50))
-    password = db.Column(db.String(50))
-
-    # Relación con Pedidos
+    telefono = db.Column(db.String(20))
+    password = db.Column(db.String(255))
     orders = db.relationship('Pedido', backref='empleado_relacionado', lazy=True)
-
+    mesas = db.relationship('Mesa', backref='empleado_asignado', lazy=True)  # Relación con Mesas
+    foto_perfil = db.Column(db.Text)
     def __repr__(self):
-        return "id: ", self.idd_empleado, " nombre: ", self.nombre, " apellido: ", self.cargo
+        return "id: ", self.id, " nombre: ", self.nombre, " apellido: ", self.cargo

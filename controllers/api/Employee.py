@@ -180,3 +180,56 @@ def delete_employee_by_email():
         return jsonify({"message": f"Empleado con correo {email} eliminado exitosamente"}), 200
     except Exception as e:
         return jsonify({"error": f"Error al eliminar empleado: {str(e)}"}), 500
+
+
+@employee.route("/current_user", methods=["GET"])
+def get_current_user():
+    try:
+        # Verifica si hay un usuario en la sesión
+        user_id = session.get("user_id")
+        if not user_id:
+            return jsonify({"error": "No hay usuario autenticado"}), 401
+
+        # Busca al empleado por su ID
+        empleado = Employee.query.get(user_id)
+        if not empleado:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        # Retorna la información del usuario actual
+        return jsonify({
+            "id": empleado.id,
+            "nombre": empleado.nombre,
+            "apellido": empleado.apellido,
+            "cargo": empleado.cargo,
+            "estado": empleado.estado,
+            "correo": empleado.correo,
+            "foto_perfil": empleado.foto_perfil
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener usuario actual: {str(e)}"}), 500
+
+
+@employee.route("/update_profile_picture", methods=["PUT"])
+def update_profile_picture():
+    try:
+        data = request.get_json()
+        foto_perfil = data.get("foto_perfil")
+
+        if not foto_perfil:
+            return jsonify({"error": "No se proporcionó una imagen válida"}), 400
+
+        # Obtener empleado actual (en este ejemplo usamos sesión para identificarlo)
+        empleado_id = session.get("user_id")  # Asegúrate de manejar la sesión correctamente
+        empleado = Employee.query.get(empleado_id)
+
+        if not empleado:
+            return jsonify({"error": "Empleado no encontrado"}), 404
+
+        # Actualizar la foto de perfil
+        empleado.foto_perfil = foto_perfil
+        db.session.commit()
+
+        return jsonify({"message": "Foto de perfil actualizada exitosamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al actualizar la foto de perfil: {str(e)}"}), 500

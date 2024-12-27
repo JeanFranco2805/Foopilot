@@ -17,6 +17,7 @@ def Login():
 def SignUp():
     return render_template('welcome/auth/SignUp.html')
 
+
 @authController.route("/logout", methods=["POST"])
 def Logout():
     session.clear()

@@ -1,11 +1,69 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pedidoForm");
-    const dataList = document.getElementById("empleados");
+    const dataListMesas = document.getElementById("id_mesa");
     const productosContainer = document.getElementById("productos-container");
+    const idEmpleadoField = document.getElementById("id_empleado");
+    const estadoField = document.getElementById("estado");
+    const fechaEntregaField = document.getElementById("fecha_hora_desc");
     const totalDisplay = document.createElement("div"); // Elemento para mostrar el total
-
     let total = 0;
 
+    // Función para obtener la fecha y hora actual en formato adecuado
+    function getCurrentDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // Establecer valores por defecto
+    estadoField.value = "En proceso"; // Estado predeterminado
+    fechaEntregaField.value = getCurrentDateTime(); // Fecha y hora actual como predeterminado
+
+    // Obtener el empleado actual
+    async function getCurrentEmployee() {
+        try {
+            const response = await fetch("/api/employee/current_user");
+            if (!response.ok) throw new Error("No se pudo obtener el empleado actual");
+
+            const empleado = await response.json();
+
+            idEmpleadoField.value = empleado.id;
+            idEmpleadoField.disabled = true;
+            cargarMesasEmpleado(empleado.id)
+        } catch (error) {
+            console.error("Error al obtener el empleado actual:", error);
+            Swal.fire("Error", "❌ No se pudo obtener el empleado actual.", "error");
+        }
+    }
+
+    // Cargar mesas atendidas por el empleado
+    async function cargarMesasEmpleado(empleadoId) {
+        try {
+            const response = await fetch(`/api/mesas/empleado/${empleadoId}`);
+            if (!response.ok) throw new Error("Error al obtener mesas atendidas.");
+
+            const mesas = await response.json();
+            const dataList = document.getElementById("mesas");
+
+            // Limpiar contenido previo
+            dataList.innerHTML = "";
+
+            // Agregar opciones al datalist
+            mesas.forEach((mesa, index) => {
+                const option = document.createElement("option");
+                option.value = mesa.id; // Valor de la opción
+                option.textContent = `MESA #${index + 1} - ID: ${mesa.id}`; // Texto mostrado en el menú de ayuda
+                dataList.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error al cargar mesas del empleado:", error);
+            Swal.fire("Error", "❌ No se pudieron cargar las mesas del empleado.", "error");
+        }
+    }
     function actualizarTotal() {
         total = 0;
         const productosSeleccionados = document.querySelectorAll(".producto-item input[type='checkbox']:checked");
@@ -137,26 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    async function cargarEmpleados() {
-        try {
-            const response = await fetch("http://127.0.0.1:5000/api/employee/all");
-            if (!response.ok) throw new Error("Error al cargar empleados");
-
-            const empleados = await response.json();
-
-            dataList.innerHTML = "";
-            empleados.forEach(empleado => {
-                const option = document.createElement("option");
-                option.value = empleado.id;
-                option.textContent = `${empleado.nombre} ${empleado.apellido} - ${empleado.id}`;
-                dataList.appendChild(option);
-            });
-        } catch (error) {
-            console.error("Error al cargar empleados:", error.message);
-            Swal.fire("Error", "❌ No se pudieron cargar los empleados. Verifique la conexión al servidor.", "error");
-        }
-    }
-
-    cargarEmpleados();
     cargarProductos();
+    getCurrentEmployee(); // Obtener empleado actual y cargar mesas atendidas
 });

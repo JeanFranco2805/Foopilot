@@ -1,13 +1,12 @@
 from flask import Flask, render_template
-from model.db import db  # Importar SQLAlchemy
-import os
+from model.db import db
 import psycopg2
 
 # Crear aplicación Flask
 app = Flask(__name__, template_folder='templates')
 
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0219@localhost:5432/PuntoFrio'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/PuntoFrio'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar SQLAlchemy
@@ -19,7 +18,7 @@ try:
         host="localhost",
         database="PuntoFrio",
         user="postgres",
-        password="0219"
+        password="admin"
     )
     connection.close()
     print("Conexión a la base de datos exitosa.")

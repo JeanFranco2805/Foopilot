@@ -2,6 +2,7 @@ from model.db import db
 from sqlalchemy import func
 from model.dao.DetailOrder import DetallePedido
 
+
 class Pedido(db.Model):
     __tablename__ = "Pedidos"  # Nombre de la tabla
     id_pedido = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -13,7 +14,7 @@ class Pedido(db.Model):
     Total = db.Column(db.Integer)
 
     # Relación con DetallePedido
-    detalles = db.relationship("DetallePedido", backref="pedido", lazy=True)
+    detalles = db.relationship("DetallePedido", backref="pedido", lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return (

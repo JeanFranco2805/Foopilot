@@ -63,6 +63,125 @@ document.addEventListener("DOMContentLoaded", () => {
                 .catch(error => console.error("Error al obtener detalles del pedido:", error));
         }
     });
+    window.hacerEditable = function (cell, field) {
+        const originalValue = cell.innerText.trim();
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = originalValue;
+
+        cell.innerHTML = "";
+        cell.appendChild(input);
+
+        input.focus();
+
+        // Guardar cambios al presionar Enter
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                guardarValorEditado(cell, input, originalValue);
+            }
+        });
+
+        // Guardar cambios al salir del campo
+        input.addEventListener("blur", () => {
+            guardarValorEditado(cell, input, originalValue);
+        });
+    };
+
+    function guardarValorEditado(cell, input, originalValue) {
+        const newValue = input.value.trim();
+        if (newValue === originalValue || newValue === "") {
+            cell.innerText = originalValue; // Restaurar valor original si no hay cambios
+        } else {
+            cell.innerText = newValue; // Actualizar celda con el nuevo valor
+            cell.dataset.valueChanged = "true"; // Indicar que este campo fue modificado
+        }
+    }
+    window.actualizarFila = async function (button) {
+        const fila = button.closest("tr");
+        const idPedido = fila.dataset.idPedido;
+
+        // Recopila los datos editados
+        const data = {};
+        fila.querySelectorAll("td[ondblclick]").forEach((cell) => {
+            const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1]; // Obtener el nombre del campo
+            const valueChanged = cell.dataset.valueChanged === "true"; // Verificar si cambió el valor
+            let value = cell.innerText.trim();
+
+            if (valueChanged) {
+                // Limpiar y convertir el campo 'Total'
+                if (field === "Total") {
+                    value = parseFloat(value.replace(/[^0-9.]/g, "")); // Remueve caracteres no numéricos
+                    if (isNaN(value)) value = 0; // Asegúrate de que sea un número válido
+                }
+                data[field] = value; // Agregar solo campos modificados
+            }
+        });
+
+        if (Object.keys(data).length === 0) {
+            Swal.fire("Sin cambios", "No se detectaron cambios para actualizar.", "info");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/orders/actualizar/${idPedido}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                Swal.fire("Actualizado", result.message, "success");
+                cargarPedidos(); // Recargar la tabla después de actualizar
+            } else {
+                const error = await response.json();
+                const errorMessage = error.message || error.error || "Error desconocido"; // Manejar diferentes campos
+                Swal.fire("Error", `No se pudo actualizar el pedido: ${errorMessage}`, "error");
+            }
+        } catch (error) {
+            Swal.fire("Error", "Ocurrió un error al actualizar el pedido.", "error");
+            console.error("Error al actualizar pedido:", error);
+        }
+    };
+
+
+    window.eliminarPedido = async function (button) {
+        const fila = button.closest("tr");
+        const idPedido = fila.dataset.idPedido;
+
+        const result = await Swal.fire({
+            title: "¿Eliminar pedido?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/api/orders/eliminar/${idPedido}`, {
+                    method: "DELETE",
+                });
+
+                // Captura respuesta JSON
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire("Eliminado", result.message, "success");
+                    cargarPedidos(); // Recargar la tabla después de eliminar
+                } else {
+                    // Manejar errores enviados por el backend
+                    Swal.fire("Error", result.error || "No se pudo eliminar el pedido.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un error al intentar eliminar el pedido.", "error");
+                console.error("Error al eliminar pedido:", error);
+            }
+        }
+    };
 
     // Función para mostrar detalles en el modal
     function mostrarDetallesPedido(detalles) {
@@ -124,6 +243,73 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
+    const profilePicture = document.getElementById("profile-picture");
+    const profileInfo = document.querySelector(".profile-info");
 
+    // Función para cargar la foto de perfil, nombre y cargo del usuario actual
+    async function loadUserProfile() {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
+            if (!response.ok) throw new Error("No se pudo obtener los datos del usuario actual");
+
+            const user = await response.json();
+
+            // Actualizar foto de perfil si existe
+            if (user.foto_perfil) {
+                profilePicture.src = user.foto_perfil; // Foto almacenada en formato Base64
+            }
+
+            // Actualizar información de perfil
+            profileInfo.innerHTML = `
+                <p><strong>${user.nombre}</strong></p>
+                <p>${user.cargo}</p>
+            `;
+        } catch (error) {
+            console.error("Error al cargar el perfil del usuario:", error);
+            Swal.fire("Error", "No se pudo cargar el perfil del usuario.", "error");
+        }
+    }
+
+    // Función para actualizar la foto de perfil en la base de datos
+    profilePicture.addEventListener("dblclick", () => {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = async (e) => {
+                    const base64Image = e.target.result;
+
+                    try {
+                        const response = await fetch("http://127.0.0.1:5000/api/employee/update_photo", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ foto_perfil: base64Image }),
+                        });
+
+                        if (response.ok) {
+                            Swal.fire("Éxito", "Foto de perfil actualizada correctamente.", "success");
+                            profilePicture.src = base64Image; // Actualizar visualmente
+                        } else {
+                            const error = await response.json();
+                            Swal.fire("Error", `Error al actualizar la foto: ${error.error}`, "error");
+                        }
+                    } catch (err) {
+                        console.error("Error al actualizar la foto:", err);
+                        Swal.fire("Error", "No se pudo actualizar la foto de perfil.", "error");
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        fileInput.click();
+    });
+    loadUserProfile();
     cargarPedidos(); // Cargar pedidos al iniciar
 });

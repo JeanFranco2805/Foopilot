@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const profilePicture = document.getElementById("profile-picture");
     const profilePictureInput = document.getElementById("profile-picture-input");
     const logoutButton = document.getElementById("logoutBtn")
+
     const createCategoryBlock = (name = "Nueva Categoría", persistInDB = true) => {
         const block = document.createElement("div");
         block.className = "category-block";
@@ -258,13 +259,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (file) {
             const reader = new FileReader();
 
-            reader.onload = (e) => {
-                profilePicture.src = e.target.result;
+            reader.onload = async (e) => {
+                const base64Image = e.target.result;
+                profilePicture.src = base64Image; // Actualizar visualmente la foto
+                await updateProfilePicture(base64Image); // Enviar a la base de datos
             };
 
             reader.readAsDataURL(file);
         }
     });
+
     logoutButton.addEventListener("click", async () => {
         const result = await Swal.fire({
             title: "¿Cerrar sesión?",
@@ -297,6 +301,94 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    async function loadEmployeeProfile() {
+        const profileInfo = document.querySelector(".profile-info");
+        const profilePicture = document.getElementById("profile-picture");
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
+            if (!response.ok) throw new Error("No se pudo obtener los datos del empleado actual");
+
+            const employee = await response.json();
+
+            // Actualiza el nombre y cargo en el panel
+            profileInfo.innerHTML = `
+            <p><strong>${employee.nombre}</strong></p> <!-- Solo muestra el nombre -->
+            <p>${employee.cargo}</p>
+        `;
+
+            if (employee.foto_perfil) {
+                profilePicture.src = employee.foto_perfil; // Foto almacenada en formato Base64
+            }
+        } catch (error) {
+            console.error("Error al cargar el perfil del empleado:", error);
+            Swal.fire("Error", "No se pudo cargar el perfil del empleado.", "error");
+        }
+    }
+
+
+
+    profilePicture.addEventListener("click", () => {
+        profilePictureInput.click();
+    });
+
+    profilePictureInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                profilePicture.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+
+            // Subir la nueva imagen al servidor
+            uploadProfilePicture(file);
+        }
+    });
+
+    async function uploadProfilePicture(file) {
+        const formData = new FormData();
+        formData.append("foto_perfil", file);
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/employee/upload_profile_picture", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                Swal.fire("Éxito", "Foto de perfil actualizada.", "success");
+            } else {
+                const error = await response.json();
+                Swal.fire("Error", `No se pudo actualizar la foto de perfil: ${error.error}`, "error");
+            }
+        } catch (error) {
+            console.error("Error al subir la foto de perfil:", error);
+            Swal.fire("Error", "No se pudo conectar con el servidor. Inténtalo más tarde.", "error");
+        }
+    }
+    async function updateProfilePicture(base64Image) {
+        try {
+            const response = await fetch("/api/employee/update_profile_picture", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ foto_perfil: base64Image }),
+            });
+
+            if (response.ok) {
+                Swal.fire("Éxito", "La foto de perfil se actualizó exitosamente.", "success");
+            } else {
+                const error = await response.json();
+                Swal.fire("Error", `No se pudo actualizar la foto de perfil: ${error.error}`, "error");
+            }
+        } catch (error) {
+            console.error("Error al actualizar la foto de perfil:", error);
+            Swal.fire("Error", "No se pudo conectar con el servidor.", "error");
+        }
+    }
+
+    loadEmployeeProfile()
     loadProducts();
     loadCategoriesFromDB();
 });

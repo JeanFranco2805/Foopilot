@@ -136,7 +136,6 @@ def obtener_todos_pedidos():
         return jsonify({"error": f"Error al obtener pedidos: {str(e)}"}), 500
 
 
-# Actualizar un pedido
 @pedido_bp.route('/actualizar/<int:pedido_id>', methods=['PUT'])
 def actualizar_pedido(pedido_id):
     try:
@@ -149,20 +148,18 @@ def actualizar_pedido(pedido_id):
 
         if "fecha_hora" in data:
             pedido.fecha_hora = datetime.strptime(data["fecha_hora"], "%Y-%m-%d %H:%M:%S")
-        if "fecha_hora_despacho" in data:
-            pedido.fecha_hora_despacho = datetime.strptime(data["fecha_hora_despacho"], "%Y-%m-%d %H:%M:%S")
         if "id_mesa" in data:
-            pedido.id_mesa = data["id_mesa"]
-        if "id_empleado" in data:
-            pedido.id_empleado = data["id_empleado"]
+            pedido.id_mesa = int(data["id_mesa"])  # Asegúrate de que sea un entero
+        if "Total" in data:
+            pedido.Total = float(data["Total"])  # Asegúrate de que sea un número
         if "estado" in data:
             pedido.estado = data["estado"]
-        if "Total" in data:
-            pedido.Total = data["Total"]
 
         db.session.commit()
 
         return jsonify({"message": f"Pedido con ID {pedido_id} actualizado exitosamente."}), 200
+    except ValueError as ve:
+        return jsonify({"error": f"Valor inválido: {str(ve)}"}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

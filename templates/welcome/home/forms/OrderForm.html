@@ -16,7 +16,8 @@
     <form id="pedidoForm" method="POST" action="/api/pedidos/insertar">
         <div class="form-group">
             <label for="id_mesa"><i class="fas fa-chair"></i> ID de la Mesa</label>
-            <input type="number" id="id_mesa" name="id_mesa" placeholder="Ingrese el ID de la mesa" required>
+            <input list="mesas" id="id_mesa" name="id_mesa" placeholder="Seleccione una mesa...">
+            <datalist id="mesas"></datalist>
         </div>
 
         <div class="form-group">

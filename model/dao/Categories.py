@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from model.db import db
 
+
 class Categories(db.Model):
     __tablename__ = "Categorias"  # Nombre de la tabla
     id_categoria = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -13,7 +14,6 @@ class Categories(db.Model):
         lazy=True,  # Carga diferida
         cascade="all, delete-orphan"  # Opcional: manejar cascada en operaciones
     )
-
 
     def __repr__(self):
         return f"<Categories {self.nombre_categoria}>"

@@ -1,54 +1,9 @@
 window.onload = () => {
-    const buttonLogin = document.getElementById("buttonLogin");
-    const emailInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-
-    buttonLogin.addEventListener("click", async (event) => {
-        event.preventDefault();
-
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
-
-        if (!email || !password) {
-            Swal.fire("Error", "Por favor, ingresa tu correo y contraseña.", "error");
-            return;
-        }
-
-        const url = "http://127.0.0.1:5000/api/employee/login";
-        const base_url = "http://127.0.0.1:5000/";
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                Swal.fire({
-                    title: "Bienvenido",
-                    text: `Bienvenido ${data.user.nombre} ${data.user.apellido}`,
-                    icon: "success",
-                    confirmButtonText: "Continuar"
-                }).then(() => {
-                    window.location.href = base_url + "home/employee/admin";
-                });
-            } else {
-                const errorData = await response.json();
-                Swal.fire("Error", errorData.error || "Error al iniciar sesión.", "error");
-            }
-        } catch (error) {
-            console.error("Error al intentar iniciar sesión:", error);
-            Swal.fire("Error", "Error en el servidor. Intenta más tarde.", "error");
-        }
-    });
 
     const buttonSignUp = document.getElementById("buttonSignUp");
     buttonSignUp.addEventListener("click", async (event) => {
         event.preventDefault();
-        const url = "http://127.0.0.1:5000/api/employee/add";
+        const url = "/api/employee/add";
         const data = {
             "nombre": document.getElementById("name").value.trim(),
             "apellido": document.getElementById("lastname").value.trim(),

@@ -3,29 +3,47 @@ window.onload = () => {
     const addCardBtn = document.getElementById('add-card-btn');
     const logoutButton = document.getElementById("logoutButton");
 
+    let currentEmployee = null; // Guardar información del empleado actual
+
+    // Función para obtener el empleado actual de la sesión
+    async function getCurrentEmployee() {
+        try {
+            const response = await fetch('/api/employee/current_user', { method: 'GET' });
+            if (response.ok) {
+                currentEmployee = await response.json();
+            } else {
+                console.error("Error al obtener el empleado actual.");
+            }
+        } catch (error) {
+            console.error("Error al conectar con el servidor:", error);
+        }
+    }
+
     // Función para cargar mesas desde el backend
     function loadTables() {
-        fetch('/api/mesas/list', { method: 'GET' }) // Solicitud GET al backend
+        fetch('/api/mesas/list', { method: 'GET' })
             .then(response => response.json())
             .then(data => {
-                menuItems.innerHTML = ''; // Limpiar contenedor
+                menuItems.innerHTML = '';
                 data.forEach((table, index) => {
                     const newCard = `
-                    <div class="menu-item" data-id="${table.id}">
-                        <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
-                        <h3>Mesa #${index + 1}</h3>
-                        <p class="state"><strong>Estado:</strong> Desocupada</p>
-                        <p class="waiter"><strong>Mesero:</strong> Ninguno</p>
-                        <div class="menu-actions">
-                            <button class="edit-btn">Atender</button>
-                            <button class="delete-btn">Eliminar</button>
-                        </div>
-                    </div>`;
+                <div class="menu-item" data-id="${table.id}">
+                    <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
+                    <h3>Mesa #${index + 1}</h3>
+                    <p class="state"><strong>Estado:</strong> ${table.estado || "Desocupada"}</p>
+                    <p class="waiter"><strong>Mesero:</strong> ${table.mesero || "Ninguno"}</p>
+
+                    <div class="menu-actions">
+                        <button class="edit-btn">Atender</button>
+                        <button class="delete-btn">Eliminar</button>
+                    </div>
+                </div>`;
                     menuItems.insertAdjacentHTML('beforeend', newCard);
                 });
             })
             .catch(error => console.error("Error al cargar mesas:", error));
     }
+
 
     // Evento para agregar una nueva mesa
     addCardBtn.addEventListener('click', () => {
@@ -39,7 +57,7 @@ window.onload = () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data.message);
-                loadTables(); // Recargar las mesas después de insertar
+                loadTables();
             })
             .catch(error => console.error("Error al insertar la mesa:", error));
     });
@@ -50,20 +68,41 @@ window.onload = () => {
 
         // Manejar el botón "Atender"
         if (event.target.classList.contains('edit-btn')) {
-            const stateEl = card.querySelector('.state');
-            const waiterEl = card.querySelector('.waiter');
-            if (stateEl.textContent.includes('Desocupada')) {
-                stateEl.innerHTML = '<p class="state"><strong>Estado:</strong> Atendida</p>';
-                waiterEl.innerHTML = '<p class="waiter"><strong>Mesero:</strong> Juan Perez</p>';
-            } else {
-                stateEl.innerHTML = '<p class="state"><strong>Estado:</strong> Desocupada</p>';
-                waiterEl.innerHTML = '<p class="waiter"><strong>Mesero:</strong> Ninguno</p>';
+            if (!currentEmployee) {
+                Swal.fire("Error", "No se pudo identificar al empleado actual.", "error");
+                return;
             }
+
+            const mesaId = card.getAttribute('data-id');
+            fetch(`/api/mesas/assign_employee`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_mesa: mesaId, id_empleado: currentEmployee.id })
+            })
+                .then(response => {
+                    const isOk = response.ok;
+                    return response.json().then(data => ({ isOk, data }));
+                })
+                .then(({ isOk, data }) => {
+                    if (isOk) {
+                        const stateEl = card.querySelector('.state');
+                        const waiterEl = card.querySelector('.waiter');
+                        stateEl.innerHTML = '<p class="state"><strong>Estado:</strong> Atendida</p>';
+                        waiterEl.innerHTML = `<p class="waiter"><strong>Mesero:</strong> ${currentEmployee.nombre} ${currentEmployee.apellido}</p>`;
+                    } else {
+                        Swal.fire("Error", data.error || "No se pudo atender la mesa.", "error");
+                    }
+                })
+                .catch(error => {
+                    Swal.fire("Error", "Error al conectar con el servidor.", "error");
+                    console.error("Error al asignar empleado a la mesa:", error);
+                });
         }
+
 
         // Manejar el botón "Eliminar"
         if (event.target.classList.contains('delete-btn')) {
-            const mesaId = card.getAttribute('data-id'); // Obtener ID de la mesa
+            const mesaId = card.getAttribute('data-id');
 
             Swal.fire({
                 title: "¿Eliminar mesa?",
@@ -79,7 +118,7 @@ window.onload = () => {
                         .then(data => {
                             if (data.message) {
                                 Swal.fire("Éxito", "Mesa eliminada exitosamente.", "success");
-                                loadTables(); // Recargar mesas después de eliminar
+                                loadTables();
                             } else {
                                 Swal.fire("Error", "No se pudo eliminar la mesa.", "error");
                                 console.error("Error:", data.error);
@@ -93,6 +132,7 @@ window.onload = () => {
             });
         }
     });
+
     logoutButton.addEventListener("click", async () => {
         const result = await Swal.fire({
             title: "¿Cerrar sesión?",
@@ -105,14 +145,11 @@ window.onload = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
-                    method: "POST",
-                    credentials: "include",
-                });
+                const response = await fetch("/auth/logout", { method: "POST", credentials: "include" });
 
                 if (response.ok) {
                     Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
-                        window.location.href=  location.href
+                        window.location.href = location.href;
                     });
                 } else {
                     const error = await response.json();
@@ -124,6 +161,74 @@ window.onload = () => {
             }
         }
     });
-    // Cargar mesas al iniciar la página
-    loadTables();
+    const profilePicture = document.getElementById("profile-picture");
+    const profileInfo = document.querySelector(".profile-info");
+
+    // Función para cargar la foto de perfil, nombre y cargo del usuario actual
+    async function loadUserProfile() {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
+            if (!response.ok) throw new Error("No se pudo obtener los datos del usuario actual");
+
+            const user = await response.json();
+
+            // Actualizar foto de perfil si existe
+            if (user.foto_perfil) {
+                profilePicture.src = user.foto_perfil; // Foto almacenada en formato Base64
+            }
+
+            // Actualizar información de perfil
+            profileInfo.innerHTML = `
+                <p><strong>${user.nombre}</strong></p>
+                <p>${user.cargo}</p>
+            `;
+        } catch (error) {
+            console.error("Error al cargar el perfil del usuario:", error);
+            Swal.fire("Error", "No se pudo cargar el perfil del usuario.", "error");
+        }
+    }
+
+    // Función para actualizar la foto de perfil en la base de datos
+    profilePicture.addEventListener("dblclick", () => {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = async (e) => {
+                    const base64Image = e.target.result;
+
+                    try {
+                        const response = await fetch("http://127.0.0.1:5000/api/employee/update_photo", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ foto_perfil: base64Image }),
+                        });
+
+                        if (response.ok) {
+                            Swal.fire("Éxito", "Foto de perfil actualizada correctamente.", "success");
+                            profilePicture.src = base64Image; // Actualizar visualmente
+                        } else {
+                            const error = await response.json();
+                            Swal.fire("Error", `Error al actualizar la foto: ${error.error}`, "error");
+                        }
+                    } catch (err) {
+                        console.error("Error al actualizar la foto:", err);
+                        Swal.fire("Error", "No se pudo actualizar la foto de perfil.", "error");
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        fileInput.click();
+    });
+    loadUserProfile();
+    // Inicializar
+    getCurrentEmployee().then(loadTables);
 };

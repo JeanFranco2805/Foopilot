@@ -151,6 +151,7 @@ body, html {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 .add-btn {
@@ -174,18 +175,22 @@ body, html {
 .users-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
+
 
 .users-table th, .users-table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #d3d8df;
+    white-space: nowrap;
 }
 
 .users-table th {
     background-color: #3b4d61;
     color: white;
     text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
 .users-table tr:nth-child(even) {
@@ -196,7 +201,12 @@ body, html {
     background-color: #a7c1d1;
     color: white;
 }
-
+@media (max-width: 768px) {
+    .users-table th, .users-table td {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+}
 .edit-btn, .delete-btn {
     padding: 8px 15px;
     border: none;
@@ -287,22 +297,22 @@ body, html {
 .sidebar-title {
     padding: 10px 15px;
     text-align: center;
-    background: linear-gradient(135deg, #34495e, #2c3e50); /* Degradado sutil azul oscuro */
+    background: linear-gradient(135deg, #34495e, #2c3e50);
     border-radius: 8px;
-    color: #ffffff; /* Blanco elegante */
-    font-size: 1.2rem; /* Tamaño más discreto */
+    color: #ffffff;
+    font-size: 1.2rem;
     font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-    margin: -40px 0 15px; /* Ajuste del margen */
-    letter-spacing: 1px; /* Espaciado elegante */
-    text-transform: uppercase; /* Mayúsculas */
-    border: 2px solid #3b4d61; /* Borde más oscuro */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    margin: -40px 0 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid #3b4d61;
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .sidebar-title:hover {
-    background: linear-gradient(135deg, #3b4d61, #2c3e50); /* Efecto en hover más oscuro */
-    transform: scale(1.02); /* Suave aumento al pasar el mouse */
+    background: linear-gradient(135deg, #3b4d61, #2c3e50);
+    transform: scale(1.02);
     cursor: pointer;
 }
 .pagination-container {
@@ -329,4 +339,76 @@ body, html {
 .pagination-container button:disabled {
     background-color: #e9ecef;
     cursor: not-allowed;
+}
+@media (min-width: 768px) {
+    .admin-container {
+        flex-direction: row;
+    }
+}
+
+.sidebar {
+    width: 100%;
+    background-color: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        width: 270px;
+    }
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .sidebar nav ul {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.sidebar nav ul li {
+    margin: 10px 0;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.sidebar nav ul li a:hover {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    transform: scale(1.05);
+}
+
+.sidebar nav ul li a.active {
+    color: #f39c12;
+    font-weight: bold;
+    border-left: 4px solid #f39c12;
+    background: rgba(255, 255, 255, 0.1);
 }

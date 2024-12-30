@@ -3,10 +3,8 @@ from flask import Flask, render_template
 from controllers.api.Stats import stats_bp
 from model.db import db
 import psycopg2
-from flask_cors import CORS
 
 app = Flask(__name__, template_folder='templates')
-CORS(app)
 
 app.config[
     'SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:eOfokWoULlvizaWwPGsbQjuENGSElpbJ@junction.proxy.rlwy.net:13176/railway'

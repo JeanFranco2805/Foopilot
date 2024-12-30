@@ -582,3 +582,122 @@ body, html {
     align-items: center;
     gap: 10px;
 }
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: auto;
+        flex-wrap: wrap;
+        padding: 10px 15px;
+        z-index: 1000;
+    }
+
+    .sidebar h2 {
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 10px;
+        flex-basis: 100%;
+    }
+
+    .sidebar nav ul {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar nav ul li a {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+
+    .sidebar-profile {
+        display: none;
+    }
+}
+@media (max-width: 768px) {
+    .logout-btn {
+        display: block;
+        margin: 10px auto;
+        width: 90%;
+        text-align: center;
+    }
+
+    .sidebar {
+        flex-wrap: wrap;
+    }
+
+    .sidebar-profile {
+        flex-basis: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .logout-btn {
+        display: block;
+        margin: 10px auto;
+        width: 90%;
+        text-align: center;
+    }
+
+    .sidebar {
+        flex-wrap: wrap;
+    }
+
+    .sidebar-profile {
+        flex-basis: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-spacing: 0;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+
+    .orders-table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+}
+@media (max-width: 768px) {
+    .sidebar nav ul {
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 5px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar nav ul li {
+        margin: 0;
+    }
+
+    .sidebar nav ul li a {
+        font-size: 0.85rem;
+        padding: 6px 8px;
+    }
+
+    .logout-btn {
+        display: block;
+        margin: 5px auto;
+        width: 80%;
+        text-align: center;
+    }
+}

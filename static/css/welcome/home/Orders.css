@@ -809,3 +809,57 @@ body, html {
         text-align: center;
     }
 }
+@media (max-width: 768px) {
+    .main-content {
+        overflow-y: auto;
+        max-height: 100vh;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .add-btn {
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        margin: 10px auto;
+        padding: 10px 15px;
+        font-size: 1rem;
+        text-align: center;
+        background-color: #58a36d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .add-btn:hover {
+        background-color: #479459;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        padding: 10px;
+        align-items: center;
+    }
+
+    .filter-container input[type="text"],
+    .filter-container input[type="date"],
+    .filter-container select {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn,
+    .clear-btn {
+        flex: 1 1 auto;
+        width: 45%;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+}

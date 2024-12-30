@@ -210,6 +210,7 @@ body, html {
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
+    max-width: 250px
 }
 
 .add-category-btn:hover {
@@ -406,4 +407,121 @@ body, html {
     font-weight: bold;
     border-left: 4px solid #f39c12;
     background: rgba(255, 255, 255, 0.1);
+}
+#categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.category-block {
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    font-weight: bold;
+    color: #4f657d;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    min-width: 100px;
+    text-align: center;
+    user-select: none;
+}
+
+.category-block:hover {
+    transform: scale(1.05);
+    background-color: #a7c1d1;
+    color: #ffffff;
+}
+
+.add-category-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #58a36d;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+.add-category-btn:hover {
+    background-color: #479459;
+    transform: scale(1.05);
+}
+
+.menu-item {
+    background: #ffffff;
+    padding: 15px;
+    border: 1px solid #d3d8df;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.menu-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.edit-btn,
+.delete-btn {
+    flex: 1 1 calc(50% - 10px);
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .edit-btn,
+    .delete-btn {
+        flex: none;
+        width: auto;
+    }
+}
+
+.add-card-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.add-card-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    background-color: #58a36d;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-card-btn:hover {
+    background-color: #479459;
+    transform: scale(1.1);
+}
+
+.add-card-btn:active {
+    transform: scale(0.95);
 }

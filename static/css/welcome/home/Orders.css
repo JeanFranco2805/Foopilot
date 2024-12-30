@@ -762,3 +762,23 @@ body, html {
         text-align: center;
     }
 }
+@media (max-width: 768px) {
+    .insert-order-btn {
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        margin: 10px auto;
+        padding: 10px 15px;
+        font-size: 1rem;
+        text-align: center;
+        background-color: #58a36d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .insert-order-btn:hover {
+        background-color: #479459;
+    }
+}

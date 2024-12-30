@@ -12,17 +12,15 @@
 <body>
 <div class="admin-container">
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Panel Administrativo</h2>
-        </div>
-        <div class="sidebar-title"></div>
+        <div class="sidebar-header"></div>
+        <div class="sidebar-title"><h1>Foopilot</h1></div>
         <nav>
             <ul>
                 <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
                 <li><a href="{{ url_for('home.registerEmployee') }}">Empleados</a></li>
                 <li><a href="{{ url_for('home.ordersPanel') }}">Pedidos</a></li>
                 <li><a href="{{ url_for('home.mesasPanel') }}">Mesas</a></li>
-                <li><a href="{{ url_for('home.historyPane') }}">Historial</a></li>
+                <li><a href="{{ url_for('home.statistics') }}">Estadisticas</a></li>
             </ul>
         </nav>
         <div class="sidebar-profile">

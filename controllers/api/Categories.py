@@ -31,7 +31,6 @@ def get_category_by_id(id_categoria):
         return jsonify({'error': str(e)}), 500
 
 
-# Crear una nueva categoría
 @categories_bp.route('/', methods=['POST'])
 def create_category():
     data = request.get_json()
@@ -50,7 +49,6 @@ def create_category():
         return jsonify({'error': str(e)}), 500
 
 
-# Actualizar una categoría por nombre
 @categories_bp.route('/<string:nombre_categoria>', methods=['PUT'])
 def update_category(nombre_categoria):
     data = request.get_json()
@@ -72,7 +70,6 @@ def update_category(nombre_categoria):
         return jsonify({'error': str(e)}), 500
 
 
-# Eliminar una categoría por nombre
 @categories_bp.route('/<string:nombre_categoria>', methods=['DELETE'])
 def delete_category(nombre_categoria):
     try:

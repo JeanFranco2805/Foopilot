@@ -3,9 +3,8 @@ window.onload = () => {
     const addCardBtn = document.getElementById('add-card-btn');
     const logoutButton = document.getElementById("logoutButton");
 
-    let currentEmployee = null; // Guardar información del empleado actual
+    let currentEmployee = null;
 
-    // Función para obtener el empleado actual de la sesión
     async function getCurrentEmployee() {
         try {
             const response = await fetch('/api/employee/current_user', { method: 'GET' });
@@ -19,33 +18,45 @@ window.onload = () => {
         }
     }
 
-    // Función para cargar mesas desde el backend
     function loadTables() {
         fetch('/api/mesas/list', { method: 'GET' })
             .then(response => response.json())
             .then(data => {
-                menuItems.innerHTML = '';
-                data.forEach((table, index) => {
-                    const newCard = `
-                <div class="menu-item" data-id="${table.id}">
-                    <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
-                    <h3>Mesa #${index + 1}</h3>
-                    <p class="state"><strong>Estado:</strong> ${table.estado || "Desocupada"}</p>
-                    <p class="waiter"><strong>Mesero:</strong> ${table.mesero || "Ninguno"}</p>
-
-                    <div class="menu-actions">
-                        <button class="edit-btn">Atender</button>
-                        <button class="delete-btn">Eliminar</button>
-                    </div>
-                </div>`;
-                    menuItems.insertAdjacentHTML('beforeend', newCard);
-                });
+                fetch('/api/employee/current_user', { method: 'GET' })
+                    .then(response => response.json())
+                    .then(userData => {
+                        const userRole = userData.cargo;
+                        menuItems.innerHTML = '';
+                        data.forEach((table) => {
+                            const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
+                            const newCard = `
+                        <div class="menu-item" data-id="${table.id}">
+                            <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
+                            <h3>${table.nombre}</h3>
+                            <p class="state"><strong>Estado:</strong> ${table.estado || "Desocupada"}</p>
+                            <p class="waiter"><strong>Mesero:</strong> ${table.mesero || "Ninguno"}</p>
+                            <div class="menu-actions">
+                                <button class="edit-btn">Atender</button>
+                                <button 
+                                    class="delete-btn ${!isAdminOrManager ? 'blocked' : ''}" 
+                                    ${!isAdminOrManager ? 'disabled' : ''} 
+                                    onclick="${!isAdminOrManager ? 'alert(`No tienes permisos`)' : ''}">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>`;
+                            menuItems.insertAdjacentHTML('beforeend', newCard);
+                        });
+                    })
+                    .catch(error => console.error("Error al obtener el usuario actual:", error));
             })
             .catch(error => console.error("Error al cargar mesas:", error));
     }
 
 
-    // Evento para agregar una nueva mesa
+
+
+
     addCardBtn.addEventListener('click', () => {
         const nuevaMesa = { nombre: `Mesa ${Date.now()}` };
 
@@ -62,11 +73,9 @@ window.onload = () => {
             .catch(error => console.error("Error al insertar la mesa:", error));
     });
 
-    // Manejo de eventos en el contenedor de mesas
     menuItems.addEventListener('click', (event) => {
         const card = event.target.closest('.menu-item');
 
-        // Manejar el botón "Atender"
         if (event.target.classList.contains('edit-btn')) {
             if (!currentEmployee) {
                 Swal.fire("Error", "No se pudo identificar al empleado actual.", "error");
@@ -100,16 +109,15 @@ window.onload = () => {
         }
 
 
-        // Manejar el botón "Eliminar"
         if (event.target.classList.contains('delete-btn')) {
             const mesaId = card.getAttribute('data-id');
 
             Swal.fire({
-                title: "¿Eliminar mesa?",
-                text: "¿Estás seguro de que deseas eliminar esta mesa?",
+                title: "¿Marcar mesa como INACTIVA?",
+                text: "¿Estás seguro de que deseas inactivar esta mesa?",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Sí, eliminar",
+                confirmButtonText: "Sí, inactivar",
                 cancelButtonText: "Cancelar",
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -117,20 +125,21 @@ window.onload = () => {
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {
-                                Swal.fire("Éxito", "Mesa eliminada exitosamente.", "success");
+                                Swal.fire("Éxito", "Mesa marcada como INACTIVA exitosamente.", "success");
                                 loadTables();
                             } else {
-                                Swal.fire("Error", "No se pudo eliminar la mesa.", "error");
+                                Swal.fire("Error", "No se pudo inactivar la mesa.", "error");
                                 console.error("Error:", data.error);
                             }
                         })
                         .catch(error => {
                             Swal.fire("Error", "Error al conectar con el servidor.", "error");
-                            console.error("Error al eliminar la mesa:", error);
+                            console.error("Error al inactivar la mesa:", error);
                         });
                 }
             });
         }
+
     });
 
     logoutButton.addEventListener("click", async () => {
@@ -163,21 +172,16 @@ window.onload = () => {
     });
     const profilePicture = document.getElementById("profile-picture");
     const profileInfo = document.querySelector(".profile-info");
-
-    // Función para cargar la foto de perfil, nombre y cargo del usuario actual
     async function loadUserProfile() {
         try {
             const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
             if (!response.ok) throw new Error("No se pudo obtener los datos del usuario actual");
 
             const user = await response.json();
-
-            // Actualizar foto de perfil si existe
             if (user.foto_perfil) {
-                profilePicture.src = user.foto_perfil; // Foto almacenada en formato Base64
+                profilePicture.src = user.foto_perfil;
             }
 
-            // Actualizar información de perfil
             profileInfo.innerHTML = `
                 <p><strong>${user.nombre}</strong></p>
                 <p>${user.cargo}</p>
@@ -188,7 +192,6 @@ window.onload = () => {
         }
     }
 
-    // Función para actualizar la foto de perfil en la base de datos
     profilePicture.addEventListener("dblclick", () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
@@ -211,7 +214,7 @@ window.onload = () => {
 
                         if (response.ok) {
                             Swal.fire("Éxito", "Foto de perfil actualizada correctamente.", "success");
-                            profilePicture.src = base64Image; // Actualizar visualmente
+                            profilePicture.src = base64Image;
                         } else {
                             const error = await response.json();
                             Swal.fire("Error", `Error al actualizar la foto: ${error.error}`, "error");
@@ -229,6 +232,5 @@ window.onload = () => {
         fileInput.click();
     });
     loadUserProfile();
-    // Inicializar
     getCurrentEmployee().then(loadTables);
 };

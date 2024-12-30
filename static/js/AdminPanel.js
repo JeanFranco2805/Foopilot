@@ -8,16 +8,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const profilePictureInput = document.getElementById("profile-picture-input");
     const logoutButton = document.getElementById("logoutBtn")
 
-    const createCategoryBlock = (name = "Nueva Categoría", persistInDB = true) => {
+    const createCategoryBlock = async (name = "Nueva Categoría", persistInDB = true) => {
+        const userResponse = await fetch('/api/employee/current_user');
+        const userData = await userResponse.json();
+        const userRole = userData.cargo;
+        const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
+
         const block = document.createElement("div");
         block.className = "category-block";
         block.textContent = name;
 
         const deleteBtn = document.createElement("button");
-        deleteBtn.className = "delete-category-btn";
+        deleteBtn.className = `delete-category-btn ${!isAdminOrManager ? 'blocked' : ''}`;
         deleteBtn.textContent = "×";
+        if (!isAdminOrManager) {
+            deleteBtn.disabled = true;
+        }
 
         deleteBtn.addEventListener("click", async (e) => {
+            if (!isAdminOrManager) {
+                return showPermissionDeniedMessage();
+            }
+
             e.stopPropagation();
             const result = await Swal.fire({
                 title: "¿Estás seguro?",
@@ -30,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch(BASE_URL + `/${name}`, {method: "DELETE"});
+                    const response = await fetch(BASE_URL + `/${name}`, { method: "DELETE" });
                     if (response.ok) {
                         block.remove();
                         Swal.fire("Eliminado", "La categoría fue eliminada exitosamente.", "success");
@@ -45,7 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         block.addEventListener("dblclick", async () => {
-            const {value: newName} = await Swal.fire({
+            if (!isAdminOrManager) {
+                return showPermissionDeniedMessage();
+            }
+
+            const { value: newName } = await Swal.fire({
                 title: "Editar categoría",
                 input: "text",
                 inputLabel: "Nuevo nombre de la categoría",
@@ -64,8 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     const response = await fetch(BASE_URL + `/${name}`, {
                         method: "PUT",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({nuevo_nombre: newName.trim()}),
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ nuevo_nombre: newName.trim() }),
                     });
 
                     if (response.ok) {
@@ -157,10 +173,28 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 throw new Error("Error al obtener los productos del servidor");
             }
-
             const products = await response.json();
-            menuContainer.innerHTML = "";
 
+            const categoriesResponse = await fetch('/api/categories/');
+            if (!categoriesResponse.ok) {
+                throw new Error("Error al obtener las categorías del servidor");
+            }
+            const categories = await categoriesResponse.json();
+
+            const categoryMap = {};
+            categories.forEach(category => {
+                categoryMap[category.id_categoria] = category.nombre_categoria;
+            });
+
+            const userResponse = await fetch('/api/employee/current_user');
+            if (!userResponse.ok) {
+                throw new Error("Error al obtener el usuario actual");
+            }
+            const userData = await userResponse.json();
+            const userRole = userData.cargo;
+            const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
+
+            menuContainer.innerHTML = "";
             products.forEach(product => {
                 const div = document.createElement("div");
                 div.className = "menu-item";
@@ -176,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 nameField.onclick = () => toggleInput(nameField);
 
                 const categoryField = document.createElement("p");
-                categoryField.textContent = `Categoría: ${product.categoria_id}`;
+                categoryField.textContent = `Categoría: ${categoryMap[product.categoria_id] || "Sin categoría"}`;
                 categoryField.onclick = () => toggleInput(categoryField);
 
                 const priceField = document.createElement("span");
@@ -192,14 +226,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 menuActions.className = "menu-actions";
 
                 const editBtn = document.createElement("button");
-                editBtn.className = "edit-btn";
+                editBtn.className = `edit-btn ${!isAdminOrManager ? 'blocked' : ''}`;
                 editBtn.textContent = "Editar";
-                editBtn.onclick = () => updateProduct(div, nameField, categoryField, priceField);
+                editBtn.onclick = () => {
+                    if (!isAdminOrManager) {
+                        showPermissionDeniedMessage();
+                    } else {
+                        window.location.href = `${window.location.origin}/home/employee/admin/update?id=${product.id}`;
+                    }
+                };
+                if (!isAdminOrManager) editBtn.disabled = true;
 
                 const deleteBtn = document.createElement("button");
-                deleteBtn.className = "delete-btn";
+                deleteBtn.className = `delete-btn ${!isAdminOrManager ? 'blocked' : ''}`;
                 deleteBtn.textContent = "Eliminar";
-                deleteBtn.onclick = () => deleteProduct(deleteBtn, product.id);
+                deleteBtn.onclick = () => {
+                    if (!isAdminOrManager) {
+                        showPermissionDeniedMessage();
+                    } else {
+                        deleteProduct(deleteBtn, product.id);
+                    }
+                };
+                if (!isAdminOrManager) deleteBtn.disabled = true;
 
                 menuActions.appendChild(editBtn);
                 menuActions.appendChild(deleteBtn);
@@ -218,6 +266,16 @@ document.addEventListener("DOMContentLoaded", () => {
             Swal.fire("Error", "No se pudieron cargar los productos.", "error");
         }
     }
+
+    function showPermissionDeniedMessage() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Permiso denegado',
+            text: 'No tienes permisos para realizar esta acción.',
+            confirmButtonText: 'Entendido'
+        });
+    }
+
 
     async function deleteProduct(buttonElement, productId) {
         const result = await Swal.fire({
@@ -261,8 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             reader.onload = async (e) => {
                 const base64Image = e.target.result;
-                profilePicture.src = base64Image; // Actualizar visualmente la foto
-                await updateProfilePicture(base64Image); // Enviar a la base de datos
+                profilePicture.src = base64Image;
+                await updateProfilePicture(base64Image);
             };
 
             reader.readAsDataURL(file);
@@ -309,15 +367,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) throw new Error("No se pudo obtener los datos del empleado actual");
 
             const employee = await response.json();
-
-            // Actualiza el nombre y cargo en el panel
             profileInfo.innerHTML = `
-            <p><strong>${employee.nombre}</strong></p> <!-- Solo muestra el nombre -->
+            <p><strong>${employee.nombre}</strong></p> 
             <p>${employee.cargo}</p>
         `;
 
             if (employee.foto_perfil) {
-                profilePicture.src = employee.foto_perfil; // Foto almacenada en formato Base64
+                profilePicture.src = employee.foto_perfil;
             }
         } catch (error) {
             console.error("Error al cargar el perfil del empleado:", error);
@@ -341,8 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             reader.readAsDataURL(file);
-
-            // Subir la nueva imagen al servidor
             uploadProfilePicture(file);
         }
     });

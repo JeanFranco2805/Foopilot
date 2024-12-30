@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Admin.css') }}">
+    <title>Panel de Estadísticas</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ url_for('static', filename='js/AdminPanel.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/home/stats.css') }}">
 </head>
 <body>
 <div class="admin-container">
     <aside class="sidebar">
         <div class="sidebar-header"></div>
         <div class="sidebar-title"><h1>Foopilot</h1></div>
+
         <nav>
             <ul>
                 <li><a href="{{ url_for('home.adminPanel') }}">Menú Principal</a></li>
@@ -23,7 +24,6 @@
                 <li><a href="{{ url_for('home.statistics') }}">Estadisticas</a></li>
             </ul>
         </nav>
-
         <div class="sidebar-profile">
             <div class="profile-picture-container">
                 <img id="profile-picture" src="https://via.placeholder.com/50" alt="Foto de perfil">
@@ -35,27 +35,42 @@
             </div>
             <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
         </div>
-
     </aside>
 
     <main class="main-content">
         <header>
-            <h1>Menú del Restaurante</h1>
-            <p>Administra los productos disponibles en el menú.</p>
+            <h1>Estadísticas del Restaurante</h1>
+            <p>Consulta y analiza el rendimiento de tu restaurante en tiempo real.</p>
         </header>
-        <div class="category-menu-container">
-            <h2>Categorías</h2>
-            <div id="categories"></div>
-            <button id="add-category-btn" class="add-category-btn">Añadir Categoría</button>
-        </div>
 
-        <section class="menu-items" id="menu">
-        </section>
-        <div class="add-card-container">
-            <a id="add-card-btn" class="add-card-btn" href="{{ url_for('home.addProduct') }}" >+</a>
+        <div class="stats-grid">
+            <!-- Estadísticas Clave -->
+            <div class="stat-card">
+                <h2>Empleado del Mes</h2>
+                <p>María González</p>
+                <span>85 Ventas</span>
+            </div>
+            <div class="stat-card">
+                <h2>Producto Más Vendido</h2>
+                <p>Pizza Margarita</p>
+                <span>120 Unidades</span>
+            </div>
+            <div class="stat-card">
+                <h2>Ingresos Totales</h2>
+                <p>$12,450.00</p>
+            </div>
+        </div>
+        <div class="charts-container">
+            <div class="chart">
+                <canvas id="sales-chart"></canvas>
+            </div>
+            <div class="chart">
+                <canvas id="products-chart"></canvas>
+            </div>
         </div>
     </main>
-
 </div>
+<script src="{{ url_for('static',filename='js/Statistics.js') }}"> </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

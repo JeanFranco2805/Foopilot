@@ -11,7 +11,6 @@
 </head>
 <body>
 <div class="login-container">
-    <!-- Cuadro flotante con información -->
     <div class="info-box">
         <h2>¡Bienvenido al Restaurante!</h2>
         <p>
@@ -20,8 +19,6 @@
             ¡Aprovecha nuestras promociones especiales los fines de semana!
         </p>
     </div>
-
-    <!-- Formulario de Login -->
     <div class="login-box">
         <h1>Inicia Sesión</h1>
         <form action="{{ url_for('home.adminPanel') }}" method="GET">
@@ -35,6 +32,11 @@
             </div>
             <button type="submit" class="btn" id="buttonLogin">Ingresar</button>
         </form>
+
+        <div class="register-link">
+            <p>¿No tienes cuenta?</p>
+            <a href="{{ url_for('auth.sign') }}" class="btn-register">Crea una aquí</a>
+        </div>
     </div>
 </div>
 </body>

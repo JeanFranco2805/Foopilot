@@ -6,8 +6,7 @@ class Mesa(db.Model):
     id_mesa = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(100), nullable=False)
     id_empleado = db.Column(db.Integer, db.ForeignKey('Empleados.id'), nullable=True)  # Relación con Empleados
-
-    # Relación con Pedidos
+    estado = db.Column(db.String(15))
     orders = db.relationship('Pedido', backref='mesa_relacionada', lazy=True)
 
     def __init__(self, nombre, id_empleado=None):

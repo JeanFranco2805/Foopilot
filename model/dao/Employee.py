@@ -3,7 +3,7 @@ from model.db import db
 
 class Employee(db.Model):
     __tablename__ = "Empleados"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Clave primaria
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(50))
     apellido = db.Column(db.String(50))
     cargo = db.Column(db.Text)
@@ -13,7 +13,7 @@ class Employee(db.Model):
     telefono = db.Column(db.String(20))
     password = db.Column(db.String(255))
     orders = db.relationship('Pedido', backref='empleado_relacionado', lazy=True)
-    mesas = db.relationship('Mesa', backref='empleado_asignado', lazy=True)  # Relación con Mesas
+    mesas = db.relationship('Mesa', backref='empleado_asignado', lazy=True)
     foto_perfil = db.Column(db.Text)
     def __repr__(self):
         return "id: ", self.id, " nombre: ", self.nombre, " apellido: ", self.cargo

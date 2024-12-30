@@ -1,56 +1,133 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector(".orders-table tbody");
     const logoutButton = document.getElementById("logoutButton");
-    const modal = document.querySelector("#detallesModal"); // Modal para detalles del pedido
+    const modal = document.querySelector("#detallesModal");
+
+    let currentPage = 1;
+    const recordsPerPage = 5;
 
     async function cargarPedidos() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/orders/all");
+            const response = await fetch("/api/orders/all");
             if (!response.ok) {
                 throw new Error("No se pudo obtener la lista de pedidos");
             }
 
             const pedidos = await response.json();
-
-            tableBody.innerHTML = "";
-
-            pedidos.forEach((pedido) => {
-                const Total = typeof pedido.Total === "number" ? `$${pedido.Total.toFixed(2)}` : `$${pedido.Total}`;
-
-                const fila = document.createElement("tr");
-                fila.dataset.idPedido = pedido.id_pedido;
-
-                fila.innerHTML = `
-                    <td>${pedido.id_pedido}</td>
-                    <td ondblclick="hacerEditable(this, 'id_mesa')">${pedido.id_mesa}</td>
-                    <td ondblclick="hacerEditable(this, 'mesero')">${pedido.mesero}</td>
-                    <td ondblclick="hacerEditable(this, 'Total')">${Total}</td>
-                    <td ondblclick="hacerEditable(this, 'fecha_hora')">${pedido.fecha_hora}</td>
-                    <td ondblclick="hacerEditable(this, 'estado')">${pedido.estado}</td>
-                    <td>
-                        <button class="details-btn ver-detalles-btn" data-id="${pedido.id_pedido}">Ver Detalles</button>
-                    </td>
-                    <td>
-                        <div class="actions-container">
-                            <button class="edit-btn" onclick="actualizarFila(this)">Actualizar</button>
-                            <button class="delete-btn" onclick="eliminarPedido(this)">Eliminar</button>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(fila);
-            });
+            renderPedidos(pedidos, currentPage);
+            generatePagination(pedidos.length);
         } catch (error) {
             console.error("Error al cargar los pedidos:", error.message);
             Swal.fire("Error", "❌ No se pudieron cargar los pedidos. Verifique la conexión.", "error");
         }
     }
 
-    // Función para manejar el botón "Ver Detalles"
+    function renderPedidos(pedidos, page) {
+        fetch('/api/employee/current_user', { method: 'GET' })
+            .then(response => response.json())
+            .then(userData => {
+                const userRole = userData.cargo;
+                const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
+
+                const startIndex = (page - 1) * recordsPerPage;
+                const endIndex = startIndex + recordsPerPage;
+                const pedidosPagina = pedidos.slice(startIndex, endIndex);
+
+                tableBody.innerHTML = "";
+
+                pedidosPagina.forEach((pedido) => {
+                    const Total = typeof pedido.Total === "number" ? `$${pedido.Total.toFixed(2)}` : `$${pedido.Total}`;
+
+                    const fila = document.createElement("tr");
+                    fila.dataset.idPedido = pedido.id_pedido;
+
+                    fila.innerHTML = `
+                <td>${pedido.id_pedido}</td>
+                <td ondblclick="hacerEditable(this, 'id_mesa')">${pedido.id_mesa}</td>
+                <td ondblclick="hacerEditable(this, 'mesero')">${pedido.mesero}</td>
+                <td ondblclick="hacerEditable(this, 'Total')">${Total}</td>
+                <td ondblclick="hacerEditable(this, 'fecha_hora')">${pedido.fecha_hora}</td>
+                <td ondblclick="hacerEditable(this, 'estado')">${pedido.estado}</td>
+                <td>
+                    <button class="details-btn ver-detalles-btn" data-id="${pedido.id_pedido}">Ver Detalles</button>
+                </td>
+                <td>
+                    <div class="actions-container">
+                        <button class="edit-btn ${!isAdminOrManager ? 'blocked' : ''}" 
+                                ${!isAdminOrManager ? 'disabled' : ''} 
+                                onclick="${!isAdminOrManager ? "showPermissionDeniedMessage()" : "actualizarFila(this)"}">
+                            Actualizar
+                        </button>
+                        <button class="delete-btn ${!isAdminOrManager ? 'blocked' : ''}" 
+                                ${!isAdminOrManager ? 'disabled' : ''} 
+                                onclick="${!isAdminOrManager ? "showPermissionDeniedMessage()" : "eliminarPedido(this)"}">
+                            Eliminar
+                        </button>
+                    </div>
+                </td>
+                `;
+                    tableBody.appendChild(fila);
+                });
+            })
+            .catch(error => console.error("Error al obtener el usuario actual:", error));
+    }
+
+    function showPermissionDeniedMessage() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Permiso denegado',
+            text: 'No tienes permisos para realizar esta acción.',
+            confirmButtonText: 'Entendido'
+        });
+    }
+
+
+    function generatePagination(totalRecords) {
+        const totalPages = Math.ceil(totalRecords / recordsPerPage);
+        const paginationContainer = document.querySelector(".pagination-container");
+        paginationContainer.innerHTML = "";
+
+        const prevButton = document.createElement("button");
+        prevButton.textContent = "Anterior";
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                cargarPedidos();
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+        const pageButtonsRange = 5;
+        const startPage = Math.max(1, currentPage - Math.floor(pageButtonsRange / 2));
+        const endPage = Math.min(totalPages, startPage + pageButtonsRange - 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement("button");
+            pageButton.textContent = i;
+            if (i === currentPage) {
+                pageButton.classList.add("active");
+            }
+            pageButton.addEventListener("click", () => {
+                currentPage = i;
+                cargarPedidos();
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+        const nextButton = document.createElement("button");
+        nextButton.textContent = "Siguiente";
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener("click", () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                cargarPedidos();
+            }
+        });
+        paginationContainer.appendChild(nextButton);
+    }
+
     tableBody.addEventListener("click", function (event) {
         if (event.target.classList.contains("ver-detalles-btn")) {
             const idPedido = event.target.dataset.id;
-
-            // Solicitud al backend
             fetch(`/api/orders/details/${idPedido}`)
                 .then(response => response.json())
                 .then(data => {
@@ -73,15 +150,11 @@ document.addEventListener("DOMContentLoaded", () => {
         cell.appendChild(input);
 
         input.focus();
-
-        // Guardar cambios al presionar Enter
         input.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
                 guardarValorEditado(cell, input, originalValue);
             }
         });
-
-        // Guardar cambios al salir del campo
         input.addEventListener("blur", () => {
             guardarValorEditado(cell, input, originalValue);
         });
@@ -90,17 +163,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function guardarValorEditado(cell, input, originalValue) {
         const newValue = input.value.trim();
         if (newValue === originalValue || newValue === "") {
-            cell.innerText = originalValue; // Restaurar valor original si no hay cambios
+            cell.innerText = originalValue;
         } else {
-            cell.innerText = newValue; // Actualizar celda con el nuevo valor
-            cell.dataset.valueChanged = "true"; // Indicar que este campo fue modificado
+            cell.innerText = newValue;
+            cell.dataset.valueChanged = "true";
         }
     }
     window.actualizarFila = async function (button) {
         const fila = button.closest("tr");
         const idPedido = fila.dataset.idPedido;
-
-        // Recopila los datos editados
         const data = {};
         fila.querySelectorAll("td[ondblclick]").forEach((cell) => {
             const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1]; // Obtener el nombre del campo
@@ -108,12 +179,11 @@ document.addEventListener("DOMContentLoaded", () => {
             let value = cell.innerText.trim();
 
             if (valueChanged) {
-                // Limpiar y convertir el campo 'Total'
                 if (field === "Total") {
                     value = parseFloat(value.replace(/[^0-9.]/g, "")); // Remueve caracteres no numéricos
-                    if (isNaN(value)) value = 0; // Asegúrate de que sea un número válido
+                    if (isNaN(value)) value = 0;
                 }
-                data[field] = value; // Agregar solo campos modificados
+                data[field] = value;
             }
         });
 
@@ -134,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 const result = await response.json();
                 Swal.fire("Actualizado", result.message, "success");
-                cargarPedidos(); // Recargar la tabla después de actualizar
+                cargarPedidos();
             } else {
                 const error = await response.json();
                 const errorMessage = error.message || error.error || "Error desconocido"; // Manejar diferentes campos
@@ -165,15 +235,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch(`/api/orders/eliminar/${idPedido}`, {
                     method: "DELETE",
                 });
-
-                // Captura respuesta JSON
                 const result = await response.json();
 
                 if (response.ok) {
                     Swal.fire("Eliminado", result.message, "success");
-                    cargarPedidos(); // Recargar la tabla después de eliminar
+                    cargarPedidos();
                 } else {
-                    // Manejar errores enviados por el backend
                     Swal.fire("Error", result.error || "No se pudo eliminar el pedido.", "error");
                 }
             } catch (error) {
@@ -183,11 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Función para mostrar detalles en el modal
     function mostrarDetallesPedido(detalles) {
         const modalBody = modal.querySelector(".modal-body");
 
-        // Crear el contenido dinámico para los productos
         let productosHTML = detalles.productos.map(producto => `
             <p><strong>${producto.nombre}</strong> - 
             Cantidad: ${producto.cantidad}, 
@@ -195,7 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
             Subtotal: $${producto.subtotal.toFixed(2)}</p>
         `).join("");
 
-        // Llenar el contenido del modal
         modalBody.innerHTML = `
             <p><strong>ID Pedido:</strong> ${detalles.id_pedido}</p>
             <p><strong>Fecha:</strong> ${detalles.fecha_hora}</p>
@@ -204,10 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <h3>Productos:</h3>
             ${productosHTML}
         `;
-        modal.style.display = "block"; // Mostrar el modal
+        modal.style.display = "block";
     }
 
-    // Cerrar modal
     modal.querySelector(".close").addEventListener("click", () => {
         modal.style.display = "none";
     });
@@ -246,7 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const profilePicture = document.getElementById("profile-picture");
     const profileInfo = document.querySelector(".profile-info");
 
-    // Función para cargar la foto de perfil, nombre y cargo del usuario actual
     async function loadUserProfile() {
         try {
             const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
@@ -254,12 +316,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const user = await response.json();
 
-            // Actualizar foto de perfil si existe
             if (user.foto_perfil) {
-                profilePicture.src = user.foto_perfil; // Foto almacenada en formato Base64
+                profilePicture.src = user.foto_perfil;
             }
 
-            // Actualizar información de perfil
             profileInfo.innerHTML = `
                 <p><strong>${user.nombre}</strong></p>
                 <p>${user.cargo}</p>
@@ -270,7 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Función para actualizar la foto de perfil en la base de datos
     profilePicture.addEventListener("dblclick", () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
@@ -293,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         if (response.ok) {
                             Swal.fire("Éxito", "Foto de perfil actualizada correctamente.", "success");
-                            profilePicture.src = base64Image; // Actualizar visualmente
+                            profilePicture.src = base64Image;
                         } else {
                             const error = await response.json();
                             Swal.fire("Error", `Error al actualizar la foto: ${error.error}`, "error");
@@ -311,5 +370,5 @@ document.addEventListener("DOMContentLoaded", () => {
         fileInput.click();
     });
     loadUserProfile();
-    cargarPedidos(); // Cargar pedidos al iniciar
+    cargarPedidos();
 });

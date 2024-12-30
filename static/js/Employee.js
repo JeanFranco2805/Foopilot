@@ -32,67 +32,128 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     };
 
+    let currentPage = 1;
+    const recordsPerPage = 5;
+    let users = [];
+
     const loadTableData = async () => {
         try {
             const response = await fetch(`${BASE_URL}/all`, { method: "GET" });
             if (!response.ok) {
                 throw new Error("Error al cargar los datos de la tabla");
             }
-            const users = await response.json();
+            users = await response.json();
 
-            tableBody.innerHTML = "";
-
-            users.forEach((user) => {
-                const row = document.createElement("tr");
-
-                row.innerHTML = `
-                    <td>${user.nombre}</td>
-                    <td>${user.correo}</td>
-                    <td>${user.cargo}</td>
-                    <td>${user.estado}</td>
-                    <td>
-                        <button class="edit-btn">Actualizar</button>
-                        <button class="delete-btn">Eliminar</button>
-                    </td>
-                `;
-
-                const cells = row.querySelectorAll("td:not(:last-child)");
-                cells.forEach((cell, index) => {
-                    cell.addEventListener("dblclick", () => {
-                        const fieldName = ["nombre", "correo", "cargo", "estado"][index];
-                        makeEditable(cell, async (newValue) => {
-                            try {
-                                const payload = { [fieldName]: newValue };
-                                const response = await fetch(`${BASE_URL}/email/${user.correo}`, {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(payload),
-                                });
-
-                                if (response.ok) {
-                                    Swal.fire("Éxito", `${fieldName} actualizado exitosamente`, "success");
-                                } else {
-                                    throw new Error("Error al actualizar el campo");
-                                }
-                            } catch (error) {
-                                Swal.fire("Error", "No se pudo actualizar el campo", "error");
-                                console.error(error);
-                                cell.textContent = user[fieldName];
-                            }
-                        });
-                    });
-                });
-
-                tableBody.appendChild(row);
-            });
-
-            attachEventHandlers();
+            renderTable(users, currentPage);
+            generatePagination(users.length);
         } catch (error) {
             console.error("Error al cargar datos:", error);
             Swal.fire("Error", "No se pudieron cargar los datos de los empleados.", "error");
         }
+    };
+
+    const renderTable = (data, page) => {
+        const startIndex = (page - 1) * recordsPerPage;
+        const endIndex = startIndex + recordsPerPage;
+        const paginatedData = data.slice(startIndex, endIndex);
+
+        tableBody.innerHTML = "";
+
+        paginatedData.forEach((user) => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+            <td>${user.nombre}</td>
+            <td>${user.correo}</td>
+            <td>${user.cargo}</td>
+            <td>${user.estado}</td>
+            <td>
+                <button class="edit-btn">Actualizar</button>
+                <button class="delete-btn">Eliminar</button>
+            </td>
+        `;
+
+            const cells = row.querySelectorAll("td:not(:last-child)");
+            cells.forEach((cell, index) => {
+                cell.addEventListener("dblclick", () => {
+                    const fieldName = ["nombre", "correo", "cargo", "estado"][index];
+                    makeEditable(cell, async (newValue) => {
+                        try {
+                            const payload = { [fieldName]: newValue };
+                            const response = await fetch(`${BASE_URL}/email/${user.correo}`, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(payload),
+                            });
+
+                            if (response.ok) {
+                                Swal.fire("Éxito", `${fieldName} actualizado exitosamente`, "success");
+                            } else {
+                                throw new Error("Error al actualizar el campo");
+                            }
+                        } catch (error) {
+                            Swal.fire("Error", "No se pudo actualizar el campo", "error");
+                            console.error(error);
+                            cell.textContent = user[fieldName];
+                        }
+                    });
+                });
+            });
+
+            tableBody.appendChild(row);
+        });
+
+        attachEventHandlers();
+    };
+
+    const generatePagination = (totalRecords) => {
+        const totalPages = Math.ceil(totalRecords / recordsPerPage);
+        const paginationContainer = document.querySelector(".pagination-container");
+        paginationContainer.innerHTML = "";
+
+        // Botón Anterior
+        const prevButton = document.createElement("button");
+        prevButton.textContent = "Anterior";
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(users, currentPage);
+                generatePagination(users.length);
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+        const pageButtonsRange = 5;
+        const startPage = Math.max(1, currentPage - Math.floor(pageButtonsRange / 2));
+        const endPage = Math.min(totalPages, startPage + pageButtonsRange - 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement("button");
+            pageButton.textContent = i;
+            if (i === currentPage) {
+                pageButton.classList.add("active");
+            }
+            pageButton.addEventListener("click", () => {
+                currentPage = i;
+                renderTable(users, currentPage);
+                generatePagination(users.length);
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+
+        const nextButton = document.createElement("button");
+        nextButton.textContent = "Siguiente";
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener("click", () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable(users, currentPage);
+                generatePagination(users.length);
+            }
+        });
+        paginationContainer.appendChild(nextButton);
     };
 
     const attachEventHandlers = () => {
@@ -213,7 +274,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const profilePicture = document.getElementById("profile-picture");
     const profileInfo = document.querySelector(".profile-info");
 
-    // Función para cargar la foto de perfil, nombre y cargo del usuario actual
     async function loadUserProfile() {
         try {
             const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
@@ -221,12 +281,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const user = await response.json();
 
-            // Actualizar foto de perfil si existe
             if (user.foto_perfil) {
-                profilePicture.src = user.foto_perfil; // Foto almacenada en formato Base64
+                profilePicture.src = user.foto_perfil;
             }
-
-            // Actualizar información de perfil
             profileInfo.innerHTML = `
                 <p><strong>${user.nombre}</strong></p>
                 <p>${user.cargo}</p>
@@ -236,8 +293,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             Swal.fire("Error", "No se pudo cargar el perfil del usuario.", "error");
         }
     }
-
-    // Función para actualizar la foto de perfil en la base de datos
     profilePicture.addEventListener("dblclick", () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
@@ -260,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                         if (response.ok) {
                             Swal.fire("Éxito", "Foto de perfil actualizada correctamente.", "success");
-                            profilePicture.src = base64Image; // Actualizar visualmente
+                            profilePicture.src = base64Image;
                         } else {
                             const error = await response.json();
                             Swal.fire("Error", `Error al actualizar la foto: ${error.error}`, "error");

@@ -38,9 +38,9 @@ function load() {
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            url = e.target.result; // Guardar el Base64 de la imagen
+            url = e.target.result;
         };
-        reader.readAsDataURL(file); // Convertir archivo en Base64
+        reader.readAsDataURL(file);
     });
 
     loadCategories();
@@ -75,7 +75,8 @@ async function handleSubmit(event) {
                 nombre: productName.value,
                 precio: parseFloat(price.value),
                 categoria_id: selectedCategory.id_categoria,
-                imagen: url
+                imagen: url,
+                descripcion: productDesc.value
             };
 
             const productResponse = await fetch(BASE_URL_PRODUCTS + "/productos", {
@@ -87,7 +88,11 @@ async function handleSubmit(event) {
             });
 
             if (productResponse.ok) {
-                alert("Producto agregado exitosamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Producto agregado',
+                    text: 'El producto se agregó exitosamente al menú.',
+                });
                 productName.value = "";
                 productDesc.value = "";
                 price.value = "";
@@ -95,17 +100,28 @@ async function handleSubmit(event) {
                 document.getElementById("product-image").value = "";
             } else {
                 const errorData = await productResponse.json();
-                console.error("Error al agregar el producto:", errorData.error);
-                alert("Error al agregar el producto: " + errorData.error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error al agregar el producto: ${errorData.error}`,
+                });
             }
         } catch (error) {
-            console.error("Error al procesar el formulario:", error);
-            alert("Error al procesar el formulario. Revisa la consola para más detalles.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `Error al procesar el formulario. Detalle: ${error.message}`,
+            });
         }
     } else {
-        alert("Por favor, completa todos los campos del formulario.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Formulario incompleto',
+            text: 'Por favor, completa todos los campos del formulario.',
+        });
     }
 }
+
 
 window.addEventListener("load", () => {
     load();

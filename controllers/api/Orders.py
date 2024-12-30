@@ -7,7 +7,6 @@ from datetime import datetime
 
 pedido_bp = Blueprint('pedido_bp', __name__)
 
-# Obtener detalles de un pedido por ID, incluyendo los productos
 @pedido_bp.route('/details/<int:id_pedido>', methods=['GET'])
 def obtener_detalles_pedido(id_pedido):
     try:
@@ -16,7 +15,6 @@ def obtener_detalles_pedido(id_pedido):
         if not pedido:
             return jsonify({"error": "Pedido no encontrado"}), 404
 
-        # Construir los detalles del pedido
         detalles = {
             "id_pedido": pedido.id_pedido,
             "fecha_hora": pedido.fecha_hora.strftime("%Y-%m-%d %H:%M:%S") if pedido.fecha_hora else None,
@@ -25,7 +23,6 @@ def obtener_detalles_pedido(id_pedido):
             "productos": []
         }
 
-        # Consultar productos asociados al pedido
         for detalle in pedido.detalles:
             producto = detalle.producto
             detalles["productos"].append({
@@ -40,7 +37,6 @@ def obtener_detalles_pedido(id_pedido):
         return jsonify({"error": str(e)}), 500
 
 
-# Buscar pedidos por ID de mesa
 @pedido_bp.route('/buscar/<int:id_mesa>', methods=['GET'])
 def buscar_pedidos(id_mesa):
     try:
@@ -63,19 +59,16 @@ def buscar_pedidos(id_mesa):
         return jsonify({"error": str(e)}), 500
 
 
-# Insertar un nuevo pedido
 @pedido_bp.route('/insertar', methods=['POST'])
 def insertar_pedido():
     try:
         data = request.get_json()
 
-        # Campos obligatorios para el pedido
         required_fields = ["id_mesa", "id_empleado", "estado", "Total", "productos"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"El campo '{field}' es obligatorio."}), 400
 
-        # Crear un nuevo pedido
         nuevo_pedido = Pedido(
             fecha_hora=data.get("fecha_hora", datetime.now()),
             fecha_hora_despacho=data.get("fecha_hora_despacho"),
@@ -85,9 +78,8 @@ def insertar_pedido():
             Total=data["Total"]
         )
         db.session.add(nuevo_pedido)
-        db.session.flush()  # Esto asegura que `id_pedido` esté disponible antes de guardar los detalles
+        db.session.flush()
 
-        # Insertar detalles del pedido en la tabla DetallePedido
         productos = data.get("productos", [])
         for producto in productos:
             if "id_producto" not in producto or "cantidad" not in producto:
@@ -108,7 +100,6 @@ def insertar_pedido():
         return jsonify({"error": str(e)}), 500
 
 
-# Obtener todos los pedidos
 @pedido_bp.route('/all', methods=['GET'])
 def obtener_todos_pedidos():
     try:
@@ -149,9 +140,9 @@ def actualizar_pedido(pedido_id):
         if "fecha_hora" in data:
             pedido.fecha_hora = datetime.strptime(data["fecha_hora"], "%Y-%m-%d %H:%M:%S")
         if "id_mesa" in data:
-            pedido.id_mesa = int(data["id_mesa"])  # Asegúrate de que sea un entero
+            pedido.id_mesa = int(data["id_mesa"])
         if "Total" in data:
-            pedido.Total = float(data["Total"])  # Asegúrate de que sea un número
+            pedido.Total = float(data["Total"])
         if "estado" in data:
             pedido.estado = data["estado"]
 
@@ -165,7 +156,6 @@ def actualizar_pedido(pedido_id):
         return jsonify({"error": str(e)}), 500
 
 
-# Eliminar un pedido
 @pedido_bp.route('/eliminar/<int:pedido_id>', methods=['DELETE'])
 def eliminar_pedido(pedido_id):
     try:
@@ -181,3 +171,33 @@ def eliminar_pedido(pedido_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Error al eliminar el pedido: {str(e)}"}), 500
+
+@pedido_bp.route('/details', methods=['GET'])
+def obtener_detalles_todos_pedidos():
+    try:
+        pedidos = Pedido.query.all()
+        detalles = []
+
+        for pedido in pedidos:
+            pedido_detalles = {
+                "id_pedido": pedido.id_pedido,
+                "fecha_hora": pedido.fecha_hora.strftime("%Y-%m-%d %H:%M:%S") if pedido.fecha_hora else None,
+                "estado": pedido.estado,
+                "total": pedido.Total,
+                "productos": []
+            }
+
+            for detalle in pedido.detalles:
+                producto = detalle.producto
+                pedido_detalles["productos"].append({
+                    "nombre": producto.nombre,
+                    "cantidad": detalle.cantidad,
+                    "precio_unitario": float(producto.precio),
+                    "subtotal": float(producto.precio) * detalle.cantidad
+                })
+
+            detalles.append(pedido_detalles)
+
+        return jsonify(detalles), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

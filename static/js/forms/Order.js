@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pedidoForm");
-    const dataListMesas = document.getElementById("id_mesa");
     const productosContainer = document.getElementById("productos-container");
     const idEmpleadoField = document.getElementById("id_empleado");
     const estadoField = document.getElementById("estado");
@@ -8,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalDisplay = document.createElement("div"); // Elemento para mostrar el total
     let total = 0;
 
-    // Función para obtener la fecha y hora actual en formato adecuado
     function getCurrentDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -18,12 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const minutes = String(now.getMinutes()).padStart(2, "0");
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
-
-    // Establecer valores por defecto
-    estadoField.value = "En proceso"; // Estado predeterminado
-    fechaEntregaField.value = getCurrentDateTime(); // Fecha y hora actual como predeterminado
-
-    // Obtener el empleado actual
+    estadoField.value = "En proceso";
+    fechaEntregaField.value = getCurrentDateTime();
     async function getCurrentEmployee() {
         try {
             const response = await fetch("/api/employee/current_user");
@@ -40,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Cargar mesas atendidas por el empleado
     async function cargarMesasEmpleado(empleadoId) {
         try {
             const response = await fetch(`/api/mesas/empleado/${empleadoId}`);
@@ -48,15 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const mesas = await response.json();
             const dataList = document.getElementById("mesas");
-
-            // Limpiar contenido previo
             dataList.innerHTML = "";
 
-            // Agregar opciones al datalist
             mesas.forEach((mesa, index) => {
                 const option = document.createElement("option");
-                option.value = mesa.id; // Valor de la opción
-                option.textContent = `MESA #${index + 1} - ID: ${mesa.id}`; // Texto mostrado en el menú de ayuda
+                option.value = mesa.id;
+                option.textContent = `MESA #${index + 1} - ID: ${mesa.id}`;
                 dataList.appendChild(option);
             });
         } catch (error) {
@@ -196,5 +186,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     cargarProductos();
-    getCurrentEmployee(); // Obtener empleado actual y cargar mesas atendidas
+    getCurrentEmployee();
 });

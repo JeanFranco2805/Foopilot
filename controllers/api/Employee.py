@@ -99,8 +99,7 @@ def login_employee():
 def add_employee():
     try:
         data = request.json
-
-        required_fields = ["nombre", "apellido", "cargo", "estado", "telefono", "correo", "password"]
+        required_fields = ["nombre", "apellido", "cargo", "telefono", "correo", "password"]
         if not data or not all(field in data for field in required_fields):
             missing = [field for field in required_fields if field not in data]
             return jsonify({"error": f"Faltan campos requeridos: {', '.join(missing)}"}), 400
@@ -185,17 +184,12 @@ def delete_employee_by_email():
 @employee.route("/current_user", methods=["GET"])
 def get_current_user():
     try:
-        # Verifica si hay un usuario en la sesión
         user_id = session.get("user_id")
         if not user_id:
             return jsonify({"error": "No hay usuario autenticado"}), 401
-
-        # Busca al empleado por su ID
         empleado = Employee.query.get(user_id)
         if not empleado:
             return jsonify({"error": "Usuario no encontrado"}), 404
-
-        # Retorna la información del usuario actual
         return jsonify({
             "id": empleado.id,
             "nombre": empleado.nombre,
@@ -218,14 +212,12 @@ def update_profile_picture():
         if not foto_perfil:
             return jsonify({"error": "No se proporcionó una imagen válida"}), 400
 
-        # Obtener empleado actual (en este ejemplo usamos sesión para identificarlo)
-        empleado_id = session.get("user_id")  # Asegúrate de manejar la sesión correctamente
+        empleado_id = session.get("user_id")
         empleado = Employee.query.get(empleado_id)
 
         if not empleado:
             return jsonify({"error": "Empleado no encontrado"}), 404
 
-        # Actualizar la foto de perfil
         empleado.foto_perfil = foto_perfil
         db.session.commit()
 

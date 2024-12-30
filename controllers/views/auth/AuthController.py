@@ -23,3 +23,8 @@ def Logout():
     session.clear()
     flash("Has cerrado sesión exitosamente.", "success")
     return redirect(url_for('auth.Login'))
+
+
+@authController.route("/sign")
+def sign():
+    return render_template('welcome/auth/SignEmployee.html')

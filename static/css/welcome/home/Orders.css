@@ -701,3 +701,33 @@ body, html {
         text-align: center;
     }
 }
+@media (max-width: 768px) {
+    .pagination-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    .pagination-container button {
+        flex: 1 1 auto;
+        min-width: 40px;
+        max-width: 60px;
+        padding: 5px;
+        font-size: 0.85rem;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .pagination-container button.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .pagination-container button:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+    }
+}

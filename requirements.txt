@@ -34,5 +34,5 @@ WTForms==3.1.2
 sqlalchemy==2.0.20
 flask-sqlalchemy==3.1.1
 PyJWT==2.10.1
-
+flask-cors==5.0.0
 

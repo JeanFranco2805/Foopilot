@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_cors import CORS
 
 from controllers.api.Stats import stats_bp
 from model.db import db
@@ -11,7 +12,7 @@ app.config[
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-
+CORS(app)
 try:
     connection = psycopg2.connect(
         host="localhost",

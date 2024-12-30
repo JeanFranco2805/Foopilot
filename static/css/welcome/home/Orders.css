@@ -714,7 +714,7 @@ body, html {
     .pagination-container button {
         flex: 0 0 auto;
         min-width: 40px;
-        max-width: 70px;
+        max-width: 75px;
         padding: 8px 10px;
         font-size: 0.8rem;
         border-radius: 5px;

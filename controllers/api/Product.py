@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint, request
 from model.dao.Product import Product
-from app import db
+from model.db import db
 
 product = Blueprint("products", __name__)
 

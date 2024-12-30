@@ -736,3 +736,29 @@ body, html {
     }
 }
 
+@media (max-width: 768px) {
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .filter-container input[type="text"],
+    .filter-container input[type="date"],
+    .filter-container select {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn, .clear-btn {
+        flex: 1 1 auto;
+        width: 45%;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+}

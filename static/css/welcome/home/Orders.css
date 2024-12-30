@@ -810,9 +810,9 @@ body, html {
     }
 }
 @media (max-width: 768px) {
-    .main-content {
+    .table-container {
         overflow-y: auto;
-        max-height: 100vh;
+        max-height: 60vh;
         padding: 10px;
         box-sizing: border-box;
     }

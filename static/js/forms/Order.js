@@ -69,8 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
     async function cargarProductos() {
         try {
             const [productosResponse, categoriasResponse] = await Promise.all([
-                fetch("http://127.0.0.1:5000/api/products/productos"),
-                fetch("http://127.0.0.1:5000/api/categories/")
+                fetch("/api/products/productos"),
+                fetch("/api/categories/")
             ]);
 
             if (!productosResponse.ok || !categoriasResponse.ok)
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/orders/insertar", {
+            const response = await fetch("/api/orders/insertar", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData),

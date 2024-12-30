@@ -444,7 +444,6 @@ body, html {
     color: #27ae60;
 }
 
-/* Gráficos */
 .charts-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));

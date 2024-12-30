@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5000/api"; // Cambia esto según la URL de tu API
+const API_BASE_URL = "/api"; // Cambia esto según la URL de tu API
 
 async function loadStatistics() {
     try {
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+                const response = await fetch("/auth/logout", {
                     method: "POST",
                     credentials: "include",
                 });
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const profileInfo = document.querySelector(".profile-info");
         const profilePicture = document.getElementById("profile-picture");
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
+            const response = await fetch("/api/employee/current_user");
             if (!response.ok) throw new Error("No se pudo obtener los datos del empleado actual");
 
             const employee = await response.json();
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("foto_perfil", file);
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/employee/upload_profile_picture", {
+            const response = await fetch("/api/employee/upload_profile_picture", {
                 method: "POST",
                 body: formData,
             });

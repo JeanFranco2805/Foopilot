@@ -2,8 +2,8 @@ let btn = null;
 let menu = JSON.parse(localStorage.getItem("menu")) || [];
 let file = null;
 let url = null;
-const BASE_URL_CATEGORIES = "http://127.0.0.1:5000/api/categories";
-const BASE_URL_PRODUCTS = "http://127.0.0.1:5000/api/products";
+const BASE_URL_CATEGORIES = "/api/categories";
+const BASE_URL_PRODUCTS = "/api/products";
 
 async function loadCategories() {
     const categorySelect = document.getElementById("product-category");

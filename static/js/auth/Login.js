@@ -14,8 +14,7 @@ window.onload = () => {
             return;
         }
 
-        const url = "http://127.0.0.1:5000/api/employee/login";
-        const base_url = "http://127.0.0.1:5000/";
+        const url = "/api/employee/login";
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -33,7 +32,7 @@ window.onload = () => {
                     icon: "success",
                     confirmButtonText: "Continuar"
                 }).then(() => {
-                    window.location.href = base_url + "home/employee/admin";
+                    window.location.href = `${window.location.origin}/home/employee/admin`;
                 });
             } else {
                 const errorData = await response.json();

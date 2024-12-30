@@ -1,5 +1,5 @@
-const BASE_URL_PRODUCTS = "http://127.0.0.1:5000/api/products";
-const BASE_URL_CATEGORIES = "http://127.0.0.1:5000/api/categories";
+const BASE_URL_PRODUCTS = "/api/products";
+const BASE_URL_CATEGORIES = "/api/categories";
 async function loadCategories() {
     try {
         const response = await fetch(BASE_URL_CATEGORIES);

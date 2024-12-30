@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+                const response = await fetch("/auth/logout", {
                     method: "POST",
                     credentials: "include",
                 });
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadUserProfile() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/employee/current_user");
+            const response = await fetch("/api/employee/current_user");
             if (!response.ok) throw new Error("No se pudo obtener los datos del usuario actual");
 
             const user = await response.json();
@@ -407,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const base64Image = e.target.result;
 
                     try {
-                        const response = await fetch("http://127.0.0.1:5000/api/employee/update_photo", {
+                        const response = await fetch("/api/employee/update_photo", {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ foto_perfil: base64Image }),

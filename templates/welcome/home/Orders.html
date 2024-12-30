@@ -25,7 +25,8 @@
             </ul>
         </nav>
         <div class="sidebar-profile">
-            <img id="profile-picture" src="https://via.placeholder.com/50" alt="Foto de perfil" style="cursor: pointer;">
+            <img id="profile-picture" src="https://via.placeholder.com/50" alt="Foto de perfil"
+                 style="cursor: pointer;">
             <div class="profile-info">
                 <p><strong>Juan Pérez</strong></p>
                 <p>Mesero</p>
@@ -40,6 +41,27 @@
         </header>
         <div class="table-container">
             <a class="add-btn" href="{{ url_for('home.addOrders') }}">Insertar Nuevo Pedido</a>
+            <div class="filter-container">
+                <input type="text" id="filterMesero" placeholder="Buscar por mesero..." />
+                <select id="filterEstado">
+                    <option value="">Filtrar por estado</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Completado">Completado</option>
+                </select>
+                <div class="filter-date">
+                    <label for="filterFechaInicio">Desde:</label>
+                    <input type="date" id="filterFechaInicio" />
+                </div>
+                <div class="filter-date">
+                    <label for="filterFechaFin">Hasta:</label>
+                    <input type="date" id="filterFechaFin" />
+                </div>
+                <button id="filterButton" class="filter-btn">Filtrar</button>
+                <button id="clearFilterButton" class="filter-btn clear-btn">Limpiar Filtros</button>
+            </div>
+
+
             <table class="orders-table">
                 <thead>
                 <tr>

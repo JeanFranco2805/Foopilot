@@ -2,9 +2,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector(".orders-table tbody");
     const logoutButton = document.getElementById("logoutButton");
     const modal = document.querySelector("#detallesModal");
+    const filterMesero = document.getElementById("filterMesero");
+    const filterEstado = document.getElementById("filterEstado");
+    const filterFechaInicio = document.getElementById("filterFechaInicio");
+    const filterFechaFin = document.getElementById("filterFechaFin");
+    const filterButton = document.getElementById("filterButton");
+    const clearFilterButton = document.getElementById("clearFilterButton");
 
+    let pedidos = [];
     let currentPage = 1;
     const recordsPerPage = 5;
+    const filtrosActivos = {
+        mesero: "",
+        estado: "",
+        fechaInicio: null,
+        fechaFin: null
+    };
 
     async function cargarPedidos() {
         try {
@@ -13,14 +26,61 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error("No se pudo obtener la lista de pedidos");
             }
 
-            const pedidos = await response.json();
-            renderPedidos(pedidos, currentPage);
-            generatePagination(pedidos.length);
+            pedidos = await response.json();
+            filtrarYRenderizar();
         } catch (error) {
             console.error("Error al cargar los pedidos:", error.message);
             Swal.fire("Error", "❌ No se pudieron cargar los pedidos. Verifique la conexión.", "error");
         }
     }
+
+    function filtrarYRenderizar() {
+        let pedidosFiltrados = [...pedidos];
+
+        if (filtrosActivos.mesero) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                pedido.mesero.toLowerCase().includes(filtrosActivos.mesero)
+            );
+        }
+
+        if (filtrosActivos.estado) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                pedido.estado.toLowerCase() === filtrosActivos.estado.toLowerCase()
+            );
+        }
+
+        if (filtrosActivos.fechaInicio) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                new Date(pedido.fecha_hora) >= filtrosActivos.fechaInicio
+            );
+        }
+
+        if (filtrosActivos.fechaFin) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                new Date(pedido.fecha_hora) <= filtrosActivos.fechaFin
+            );
+        }
+
+        renderPedidos(pedidosFiltrados, currentPage);
+        generatePagination(pedidosFiltrados.length);
+    }
+    filterButton.addEventListener("click", () => {
+        currentPage = 1; // Reiniciar a la primera página
+        aplicarFiltros();
+    });
+
+    clearFilterButton.addEventListener("click", () => {
+        filterMesero.value = "";
+        filterEstado.value = "";
+        filterFechaInicio.value = "";
+        filterFechaFin.value = "";
+        filtrosActivos = { mesero: "", estado: "", fechaInicio: null, fechaFin: null }; // Limpiar filtros
+        currentPage = 1;
+        renderPedidos(pedidos, currentPage);
+        generatePagination(pedidos.length);
+    });
+
+
 
     function renderPedidos(pedidos, page) {
         fetch('/api/employee/current_user', { method: 'GET' })
@@ -93,10 +153,11 @@ document.addEventListener("DOMContentLoaded", () => {
         prevButton.addEventListener("click", () => {
             if (currentPage > 1) {
                 currentPage--;
-                cargarPedidos();
+                filtrarYRenderizar();
             }
         });
         paginationContainer.appendChild(prevButton);
+
         const pageButtonsRange = 5;
         const startPage = Math.max(1, currentPage - Math.floor(pageButtonsRange / 2));
         const endPage = Math.min(totalPages, startPage + pageButtonsRange - 1);
@@ -109,21 +170,23 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             pageButton.addEventListener("click", () => {
                 currentPage = i;
-                cargarPedidos();
+                filtrarYRenderizar();
             });
             paginationContainer.appendChild(pageButton);
         }
+
         const nextButton = document.createElement("button");
         nextButton.textContent = "Siguiente";
         nextButton.disabled = currentPage === totalPages;
         nextButton.addEventListener("click", () => {
             if (currentPage < totalPages) {
                 currentPage++;
-                cargarPedidos();
+                filtrarYRenderizar();
             }
         });
         paginationContainer.appendChild(nextButton);
     }
+
 
     tableBody.addEventListener("click", function (event) {
         if (event.target.classList.contains("ver-detalles-btn")) {
@@ -369,6 +432,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fileInput.click();
     });
+    function aplicarFiltros() {
+        filtrosActivos.mesero = filterMesero.value.toLowerCase();
+        filtrosActivos.estado = filterEstado.value;
+        filtrosActivos.fechaInicio = filterFechaInicio.value ? new Date(filterFechaInicio.value) : null;
+        filtrosActivos.fechaFin = filterFechaFin.value ? new Date(filterFechaFin.value) : null;
+
+        let pedidosFiltrados = [...pedidos];
+
+        if (filtrosActivos.mesero) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                pedido.mesero.toLowerCase().includes(filtrosActivos.mesero)
+            );
+        }
+
+        if (filtrosActivos.estado) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                pedido.estado.toLowerCase() === filtrosActivos.estado.toLowerCase()
+            );
+        }
+
+        if (filtrosActivos.fechaInicio) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                new Date(pedido.fecha_hora) >= filtrosActivos.fechaInicio
+            );
+        }
+
+        if (filtrosActivos.fechaFin) {
+            pedidosFiltrados = pedidosFiltrados.filter(pedido =>
+                new Date(pedido.fecha_hora) <= filtrosActivos.fechaFin
+            );
+        }
+
+        renderPedidos(pedidosFiltrados, 1);
+        generatePagination(pedidosFiltrados.length);
+    }
+
+
+    filterMesero.addEventListener("input", aplicarFiltros);
+    filterEstado.addEventListener("change", aplicarFiltros);
+    filterFechaInicio.addEventListener("change", aplicarFiltros);
+    filterFechaFin.addEventListener("change", aplicarFiltros);
+
+    filterButton.addEventListener("click", aplicarFiltros);
+
+    clearFilterButton.addEventListener("click", () => {
+        filterMesero.value = "";
+        filterEstado.value = "";
+        filterFechaInicio.value = "";
+        filterFechaFin.value = "";
+        renderPedidos(pedidos, 1);
+    });
+
     loadUserProfile();
     cargarPedidos();
 });

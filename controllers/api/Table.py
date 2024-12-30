@@ -104,3 +104,39 @@ def mesas_por_empleado(id_empleado):
         return jsonify(mesas_json), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@mesas_bp.route('/activate/<int:id>', methods=['PUT'])
+def activate_mesa(id):
+    try:
+        mesa = Mesa.query.get(id)
+        if not mesa:
+            return jsonify({"error": "Mesa no encontrada"}), 404
+
+        mesa.estado = 'DISPONIBLE'
+        db.session.commit()
+        return jsonify({"message": "Mesa activada exitosamente!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al activar mesa: {str(e)}"}), 500
+
+
+@mesas_bp.route('/inactive', methods=['GET'])
+def list_inactive_mesas():
+    try:
+        mesas = db.session.query(
+            Mesa
+        ).filter(Mesa.estado == 'INACTIVA').all()
+
+        mesas_json = [
+            {
+                "id": mesa.id_mesa,
+                "nombre": f"Mesa #{mesa.id_mesa}",
+                "estado": mesa.estado
+            }
+            for mesa in mesas
+        ]
+
+        return jsonify(mesas_json), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

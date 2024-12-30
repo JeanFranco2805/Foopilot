@@ -515,3 +515,70 @@ body, html {
     background-color: #d3d3d3;
     color: #a9a9a9;
 }
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-container input[type="text"],
+.filter-container input[type="date"],
+.filter-container select {
+    padding: 10px;
+    border: 1px solid #d3d8df;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 200px;
+    background: #f9f9f9;
+    color: #3b4d61;
+    transition: border-color 0.3s ease;
+}
+
+.filter-container input[type="text"]:focus,
+.filter-container input[type="date"]:focus,
+.filter-container select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+    background-color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.clear-btn {
+    background-color: #e74c3c;
+}
+
+.clear-btn:hover {
+    background-color: #c0392b;
+}
+
+.filter-date label {
+    font-size: 14px;
+    color: #3b4d61;
+    margin-right: 5px;
+}
+
+.filter-date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

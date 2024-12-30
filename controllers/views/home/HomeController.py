@@ -82,6 +82,7 @@ def ordersPanel():
 
 @home.route("/employee/register")
 @login_required
+@roles_required('Administrador', 'Gerente')
 def registerEmployee():
     return render_template('welcome/home/Employee.html')
 

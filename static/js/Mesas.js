@@ -2,6 +2,8 @@ window.onload = () => {
     const menuItems = document.querySelector('.menu-items');
     const addCardBtn = document.getElementById('add-card-btn');
     const logoutButton = document.getElementById("logoutButton");
+    const toggleInactiveBtn = document.getElementById("toggleInactiveTables");
+    let showingInactiveTables = false;
 
     let currentEmployee = null;
 
@@ -19,44 +21,52 @@ window.onload = () => {
     }
 
     function loadTables() {
-        fetch('/api/mesas/list', { method: 'GET' })
+        const endpoint = showingInactiveTables ? '/api/mesas/inactive' : '/api/mesas/list';
+        fetch(endpoint, { method: 'GET' })
             .then(response => response.json())
             .then(data => {
-                fetch('/api/employee/current_user', { method: 'GET' })
-                    .then(response => response.json())
-                    .then(userData => {
-                        const userRole = userData.cargo;
-                        menuItems.innerHTML = '';
-                        data.forEach((table) => {
-                            const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
-                            const newCard = `
-                        <div class="menu-item" data-id="${table.id}">
-                            <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
-                            <h3>${table.nombre}</h3>
-                            <p class="state"><strong>Estado:</strong> ${table.estado || "Desocupada"}</p>
-                            <p class="waiter"><strong>Mesero:</strong> ${table.mesero || "Ninguno"}</p>
-                            <div class="menu-actions">
-                                <button class="edit-btn">Atender</button>
-                                <button 
-                                    class="delete-btn ${!isAdminOrManager ? 'blocked' : ''}" 
-                                    ${!isAdminOrManager ? 'disabled' : ''} 
-                                    onclick="${!isAdminOrManager ? 'alert(`No tienes permisos`)' : ''}">
-                                    Eliminar
-                                </button>
-                            </div>
-                        </div>`;
-                            menuItems.insertAdjacentHTML('beforeend', newCard);
-                        });
-                    })
-                    .catch(error => console.error("Error al obtener el usuario actual:", error));
+                menuItems.innerHTML = '';
+                data.forEach((table) => {
+                    const card = showingInactiveTables
+                        ? generateInactiveTableCard(table)
+                        : generateActiveTableCard(table);
+                    menuItems.insertAdjacentHTML('beforeend', card);
+                });
             })
             .catch(error => console.error("Error al cargar mesas:", error));
     }
 
+    function generateActiveTableCard(table) {
+        return `
+            <div class="menu-item" data-id="${table.id}">
+                <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
+                <h3>${table.nombre}</h3>
+                <p class="state"><strong>Estado:</strong> ${table.estado || "Desocupada"}</p>
+                <p class="waiter"><strong>Mesero:</strong> ${table.mesero || "Ninguno"}</p>
+                <div class="menu-actions">
+                    <button class="edit-btn">Atender</button>
+                    <button class="delete-btn">Eliminar</button>
+                </div>
+            </div>`;
+    }
 
+    function generateInactiveTableCard(table) {
+        return `
+            <div class="menu-item" data-id="${table.id}">
+                <img class="menu-image" src="https://http2.mlstatic.com/D_NQ_NP_881059-MLM42193027710_062020-O.webp" alt="Mesa">
+                <h3>${table.nombre}</h3>
+                <p class="state"><strong>Estado:</strong> ${table.estado}</p>
+                <div class="menu-actions">
+                    <button class="activate-btn">Activar</button>
+                </div>
+            </div>`;
+    }
 
-
-
+    toggleInactiveBtn.addEventListener('click', () => {
+        showingInactiveTables = !showingInactiveTables;
+        toggleInactiveBtn.textContent = showingInactiveTables ? "Ver Mesas Activas" : "Ver Mesas Inactivas";
+        loadTables();
+    });
     addCardBtn.addEventListener('click', () => {
         const nuevaMesa = { nombre: `Mesa ${Date.now()}` };
 
@@ -76,6 +86,29 @@ window.onload = () => {
     menuItems.addEventListener('click', (event) => {
         const card = event.target.closest('.menu-item');
 
+        if (event.target.classList.contains('activate-btn')) {
+            const mesaId = card.getAttribute('data-id');
+            fetch(`/api/mesas/activate/${mesaId}`, { method: 'PUT' })
+                .then(response => {
+                    const isOk = response.ok;
+                    return response.json().then(data => ({ isOk, data }));
+                })
+                .then(({ isOk, data }) => {
+                    if (isOk) {
+                        Swal.fire("Éxito", "Mesa activada exitosamente.", "success");
+                        loadTables();
+                    } else {
+                        Swal.fire("Error", data.error || "No se pudo activar la mesa.", "error");
+                        console.error("Error:", data.error);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire("Error", "Error al conectar con el servidor.", "error");
+                    console.error("Error al activar la mesa:", error);
+                });
+        }
+
+
         if (event.target.classList.contains('edit-btn')) {
             if (!currentEmployee) {
                 Swal.fire("Error", "No se pudo identificar al empleado actual.", "error");
@@ -94,10 +127,8 @@ window.onload = () => {
                 })
                 .then(({ isOk, data }) => {
                     if (isOk) {
-                        const stateEl = card.querySelector('.state');
-                        const waiterEl = card.querySelector('.waiter');
-                        stateEl.innerHTML = '<p class="state"><strong>Estado:</strong> Atendida</p>';
-                        waiterEl.innerHTML = `<p class="waiter"><strong>Mesero:</strong> ${currentEmployee.nombre} ${currentEmployee.apellido}</p>`;
+                        Swal.fire("Éxito", "Mesa atendida exitosamente.", "success");
+                        loadTables();
                     } else {
                         Swal.fire("Error", data.error || "No se pudo atender la mesa.", "error");
                     }
@@ -107,7 +138,6 @@ window.onload = () => {
                     console.error("Error al asignar empleado a la mesa:", error);
                 });
         }
-
 
         if (event.target.classList.contains('delete-btn')) {
             const mesaId = card.getAttribute('data-id');
@@ -139,7 +169,6 @@ window.onload = () => {
                 }
             });
         }
-
     });
 
     logoutButton.addEventListener("click", async () => {

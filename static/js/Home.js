@@ -35,7 +35,9 @@ async function loadCategories() {
 
 async function loadProducts() {
     try {
-        const response = await fetch(`${BASE_URL_PRODUCTS}/productos`);
+        const response = await fetch(`${BASE_URL_PRODUCTS}/productos`,{
+            referrerPolicy: "unsafe-url"
+        });
         if (response.ok) {
             const products = await response.json();
 

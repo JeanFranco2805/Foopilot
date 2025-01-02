@@ -1,329 +1,111 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    overflow: hidden;
-    background-color: #ecf0f1;
-}
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+    /* Ajuste de contenedor principal */
+    .admin-container {
+        flex-direction: column;
+        overflow-y: auto;
+    }
 
-.admin-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-}
+    /* Sidebar colapsable */
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: auto;
+        z-index: 1000;
+    }
 
-.sidebar {
-    width: 270px;
-    background-color: #2c3e50;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    flex-shrink: 0;
-}
+    .sidebar nav ul {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 0;
+    }
 
-.sidebar h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
+    .sidebar-profile {
+        flex-wrap: wrap;
+        text-align: center;
+        padding: 10px 0;
+    }
 
-.sidebar nav ul {
-    list-style: none;
-    padding: 0;
-}
+    .sidebar-profile img {
+        margin-bottom: 10px;
+    }
 
-.sidebar nav ul li {
-    margin: 15px 0;
-}
+    /* Ajustes en contenido principal */
+    .main-content {
+        margin-top: 200px;
+        padding: 10px;
+    }
 
-.sidebar nav ul li a {
-    text-decoration: none;
-    color: white;
-    font-size: 1.1rem;
-    display: block;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    background: transparent;
-    box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
-}
+    .main-content header {
+        font-size: 1.2rem;
+        text-align: center;
+    }
 
-.sidebar nav ul li a:hover {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    color: white;
-    transform: scale(1.05);
-}
+    .menu-items {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
 
-.sidebar nav ul li a.active {
-    color: #f39c12;
-    font-weight: bold;
-    border-left: 4px solid #f39c12;
-    background: rgba(255, 255, 255, 0.1);
-}
-.sidebar-profile {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #34495e;
-    padding: 10px 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    gap: 10px;
-    transition: all 0.3s ease;
-}
+    .menu-item {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
 
-.sidebar-profile img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #dcdde1;
-}
+    .menu-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
 
-.sidebar-profile .profile-info {
-    flex-grow: 1;
-    max-width: 70%;
-    color: white;
-}
+    /* Botón para agregar */
+    .add-new-item {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+    }
 
-.sidebar-profile .profile-info p:first-child {
-    font-weight: bold;
-    color: #f1c40f;
-    margin: 0;
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    .add-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
 
-.sidebar-profile .profile-info p:last-child {
-    font-size: 0.8rem;
-    color: #ecf0f1;
-    margin: 0;
-}
+    /* Tablas responsivas */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-.logout-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
+    table thead {
+        display: none;
+    }
 
-.logout-btn:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
-}
+    table tr {
+        display: block;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-.main-content {
-    flex-grow: 1;
-    padding: 20px;
-    background-color: #ecf0f1;
-    overflow-y: auto;
-    box-sizing: border-box;
-}
+    table td {
+        display: block;
+        text-align: left;
+        position: relative;
+        padding-left: 50%;
+        margin-bottom: 5px;
+    }
 
-.main-content header {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #2c3e50;
-}
-
-.menu-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.menu-item {
-    background: #fdf5e6;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.menu-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-}
-
-.menu-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.menu-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.edit-btn, .delete-btn {
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.edit-btn {
-    background-color: #27ae60;
-}
-
-.edit-btn:hover {
-    background-color: #229954;
-}
-
-.delete-btn {
-    background-color: #e74c3c;
-}
-
-.delete-btn:hover {
-    background-color: #c0392b;
-}
-
-.add-new-item {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.add-btn {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #28a745;
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-
-.add-btn:hover {
-    background-color: #218838;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    transform: scale(1.1);
-}
-
-.add-btn:active {
-    transform: scale(1.05);
-    background-color: #1e7e34;
-}
-
-.delete-btn {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-left: 10px;
-}
-
-.delete-btn:hover {
-    background-color: #c0392b;
-}
-
-.sidebar-title {
-    padding: 10px 15px;
-    text-align: center;
-    background: linear-gradient(135deg, #34495e, #2c3e50);
-    border-radius: 8px;
-    color: #ffffff;
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    margin: -40px 0 15px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: 2px solid #3b4d61;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.sidebar-title:hover {
-    background: linear-gradient(135deg, #3b4d61, #2c3e50);
-    transform: scale(1.02);
-    cursor: pointer;
-}
-.blocked {
-    background-color: #d3d3d3;
-    color: #a9a9a9;
-    border: 1px solid #ccc;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-.blocked:hover {
-    background-color: #d3d3d3;
-    color: #a9a9a9;
-}
-
-.menu-actions .activate-btn {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-}
-
-.menu-actions .activate-btn:hover {
-    background-color: #218838;
-}
-
-.menu-actions .activate-btn:active {
-    background-color: #1e7e34;
-}
-#toggleInactiveTables {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#toggleInactiveTables:hover {
-    background-color: #0056b3;
-}
-
-#toggleInactiveTables:active {
-    background-color: #004085;
-    transform: scale(0.98);
-}
-
-#toggleInactiveTables:focus {
-    outline: none;
-    box-shadow: 0px 0px 5px 2px rgba(0, 123, 255, 0.5);
+    table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        text-align: left;
+    }
 }
 
 

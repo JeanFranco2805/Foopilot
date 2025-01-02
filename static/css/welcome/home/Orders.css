@@ -582,6 +582,7 @@ body, html {
     align-items: center;
     gap: 10px;
 }
+
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -876,14 +877,13 @@ body, html {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-height: 80vh; /* Aumentar la altura máxima */
-    overflow-y: auto; /* Habilitar el scroll vertical */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
-/* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     .table-container {
-        max-height: 70vh; /* Reducir un poco en pantallas pequeñas */
+        max-height: 70vh;
         padding: 15px;
     }
 

@@ -463,3 +463,349 @@ body, html {
     height: auto;
     border-radius: 8px;
 }
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: auto;
+        flex-wrap: wrap;
+        padding: 10px 15px;
+        z-index: 1000;
+    }
+
+    .sidebar h2 {
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 10px;
+        flex-basis: 100%;
+    }
+
+    .sidebar nav ul {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar nav ul li a {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+
+    .sidebar-profile {
+        display: none;
+    }
+}
+@media (max-width: 768px) {
+    .logout-btn {
+        display: block;
+        margin: 10px auto;
+        width: 90%;
+        text-align: center;
+    }
+
+    .sidebar {
+        flex-wrap: wrap;
+    }
+
+    .sidebar-profile {
+        flex-basis: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .logout-btn {
+        display: block;
+        margin: 10px auto;
+        width: 90%;
+        text-align: center;
+    }
+
+    .sidebar {
+        flex-wrap: wrap;
+    }
+
+    .sidebar-profile {
+        flex-basis: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-spacing: 0;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+
+    .orders-table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+}
+@media (max-width: 768px) {
+    .sidebar nav ul {
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 5px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar nav ul li {
+        margin: 0;
+    }
+
+    .sidebar nav ul li a {
+        font-size: 0.85rem;
+        padding: 6px 8px;
+    }
+
+    .logout-btn {
+        display: block;
+        margin: 5px auto;
+        width: 80%;
+        text-align: center;
+    }
+}
+@media (max-width: 768px) {
+    .pagination-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    .pagination-container button {
+        flex: 0 0 auto;
+        min-width: 40px;
+        max-width: 75px;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+    }
+
+    .pagination-container button.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .pagination-container button:disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .filter-container input[type="text"],
+    .filter-container input[type="date"],
+    .filter-container select {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn, .clear-btn {
+        flex: 1 1 auto;
+        width: 45%;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+}
+@media (max-width: 768px) {
+    .add-btn {
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        margin: 15px auto;
+        padding: 10px 15px;
+        font-size: 1rem;
+        text-align: center;
+        background-color: #58a36d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .add-btn:hover {
+        background-color: #479459;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        padding: 10px;
+        align-items: center;
+    }
+
+    .filter-container input[type="text"],
+    .filter-container input[type="date"],
+    .filter-container select {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn,
+    .clear-btn {
+        flex: 1 1 auto;
+        width: 45%;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .table-container {
+        overflow-y: auto;
+        max-height: 60vh;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .orders-table {
+        width: 100%;
+        border-spacing: 0;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+
+    .orders-table th {
+        background-color: #3b4d61;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .pagination-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    .pagination-container button {
+        flex: 0 0 auto;
+        min-width: 40px;
+        max-width: 75px;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+    }
+
+    .pagination-container button.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .pagination-container button:disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+}
+.table-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        max-height: 70vh;
+        padding: 15px;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .filter-container input[type="text"],
+    .filter-container input[type="date"],
+    .filter-container select {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-btn,
+    .clear-btn,
+    .add-btn {
+        flex: 1 1 auto;
+        width: 50%;
+        max-width: 150px;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .add-btn {
+        background-color: #58a36d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 80px;
+    }
+
+    .add-btn:hover {
+        background-color: #479459;
+    }
+}

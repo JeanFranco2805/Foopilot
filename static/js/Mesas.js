@@ -9,7 +9,7 @@ window.onload = () => {
 
     async function getCurrentEmployee() {
         try {
-            const response = await fetch('/api/employee/current_user', { method: 'GET' });
+            const response = await fetch('/api/employee/current_user', {method: 'GET'});
             if (response.ok) {
                 currentEmployee = await response.json();
             } else {
@@ -22,7 +22,7 @@ window.onload = () => {
 
     function loadTables() {
         const endpoint = showingInactiveTables ? '/api/mesas/inactive' : '/api/mesas/list';
-        fetch(endpoint, { method: 'GET' })
+        fetch(endpoint, {method: 'GET'})
             .then(response => response.json())
             .then(data => {
                 menuItems.innerHTML = '';
@@ -68,11 +68,11 @@ window.onload = () => {
         loadTables();
     });
     addCardBtn.addEventListener('click', () => {
-        const nuevaMesa = { nombre: `Mesa ${Date.now()}` };
+        const nuevaMesa = {nombre: `Mesa ${Date.now()}`, estado: 'DISPONIBLE'};
 
         fetch('/api/mesas/insert', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(nuevaMesa)
         })
             .then(response => response.json())
@@ -88,12 +88,12 @@ window.onload = () => {
 
         if (event.target.classList.contains('activate-btn')) {
             const mesaId = card.getAttribute('data-id');
-            fetch(`/api/mesas/activate/${mesaId}`, { method: 'PUT' })
+            fetch(`/api/mesas/activate/${mesaId}`, {method: 'PUT'})
                 .then(response => {
                     const isOk = response.ok;
-                    return response.json().then(data => ({ isOk, data }));
+                    return response.json().then(data => ({isOk, data}));
                 })
-                .then(({ isOk, data }) => {
+                .then(({isOk, data}) => {
                     if (isOk) {
                         Swal.fire("Éxito", "Mesa activada exitosamente.", "success");
                         loadTables();
@@ -118,14 +118,14 @@ window.onload = () => {
             const mesaId = card.getAttribute('data-id');
             fetch(`/api/mesas/assign_employee`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_mesa: mesaId, id_empleado: currentEmployee.id })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id_mesa: mesaId, id_empleado: currentEmployee.id})
             })
                 .then(response => {
                     const isOk = response.ok;
-                    return response.json().then(data => ({ isOk, data }));
+                    return response.json().then(data => ({isOk, data}));
                 })
-                .then(({ isOk, data }) => {
+                .then(({isOk, data}) => {
                     if (isOk) {
                         Swal.fire("Éxito", "Mesa atendida exitosamente.", "success");
                         loadTables();
@@ -151,7 +151,7 @@ window.onload = () => {
                 cancelButtonText: "Cancelar",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/api/mesas/delete/${mesaId}`, { method: 'DELETE' })
+                    fetch(`/api/mesas/delete/${mesaId}`, {method: 'DELETE'})
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {
@@ -183,7 +183,7 @@ window.onload = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch("/auth/logout", { method: "POST", credentials: "include" });
+                const response = await fetch("/auth/logout", {method: "POST", credentials: "include"});
 
                 if (response.ok) {
                     Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
@@ -201,6 +201,7 @@ window.onload = () => {
     });
     const profilePicture = document.getElementById("profile-picture");
     const profileInfo = document.querySelector(".profile-info");
+
     async function loadUserProfile() {
         try {
             const response = await fetch("/api/employee/current_user");
@@ -237,8 +238,8 @@ window.onload = () => {
                     try {
                         const response = await fetch("/api/employee/update_photo", {
                             method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ foto_perfil: base64Image }),
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({foto_perfil: base64Image}),
                         });
 
                         if (response.ok) {

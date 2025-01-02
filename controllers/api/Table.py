@@ -1,7 +1,5 @@
 from flask import Blueprint, request, jsonify
-
 from model.dao.Employee import Employee
-from model.dao.Orders import Pedido
 from model.dao.Table import Mesa
 from model.db import db
 
@@ -12,15 +10,19 @@ mesas_bp = Blueprint('mesas', __name__)
 def insert_mesa():
     try:
         data = request.get_json()
-        nueva_mesa = Mesa(nombre=data.get('nombre'))  # Actualizado
+        if not data or not data.get('nombre'):
+            raise ValueError("El campo 'nombre' es obligatorio")
+
+        nueva_mesa = Mesa(nombre=data.get('nombre'))
+        nueva_mesa.estado = data.get('estado')
         db.session.add(nueva_mesa)
         db.session.commit()
-        print(nueva_mesa)
         return jsonify({"message": "Mesa creada exitosamente!"}), 201
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-        print("Fin")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
 
 @mesas_bp.route('/list', methods=['GET'])

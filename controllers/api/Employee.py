@@ -225,3 +225,47 @@ def update_profile_picture():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Error al actualizar la foto de perfil: {str(e)}"}), 500
+
+
+@employee.route("/inactivate", methods=["PUT"])
+def inactivate_employee():
+    data = request.json
+
+    if not data or "email" not in data:
+        return jsonify({"error": "El campo 'email' es obligatorio"}), 400
+
+    email = data["email"]
+    empleado = Employee.query.filter_by(correo=email).first()
+
+    if not empleado:
+        return jsonify({"error": f"No se encontró ningún empleado con el correo {email}"}), 404
+
+    try:
+        empleado.estado = "Inactivo"  # Cambiar el estado a 'Inactivo'
+        db.session.commit()
+        return jsonify({"message": f"Empleado con correo {email} inactivado exitosamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al inactivar empleado: {str(e)}"}), 500
+
+
+@employee.route("/inactivos", methods=["GET"])
+def get_inactive_employees():
+    try:
+        inactivos = Employee.query.filter_by(estado="Inactivo").all()
+        return jsonify([
+            {
+                "id": e.id,
+                "nombre": e.nombre,
+                "apellido": e.apellido,
+                "cargo": e.cargo,
+                "estado": e.estado,
+                "fecha_contratacion": e.fecha_contratacion.strftime("%Y-%m-%d") if e.fecha_contratacion else None,
+                "telefono": e.telefono,
+                "correo": e.correo,
+                "password": e.password
+            }
+            for e in inactivos
+        ]), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener empleados inactivos: {str(e)}"}), 500

@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/auth/SignUp.css') }}">
     <script src="{{ url_for('static',filename='js/auth/SignUp.js') }}"></script>
+    <style>
+        .btn { margin: 10px; }
+    </style>
 </head>
 <body>
 <div class="register-wrapper">
@@ -20,7 +23,7 @@
     <div class="register-right">
         <div class="register-form">
             <h2>Crear una cuenta</h2>
-            <form action="#">
+            <form id="registerForm">
                 <div class="form-row">
                     <div class="input-group">
                         <label for="name">Nombre</label>
@@ -34,14 +37,15 @@
                 <div class="form-row">
                     <div class="input-group">
                         <label for="role">Cargo</label>
-                        <input type="text" id="role" name="role" required>
+                        <select id="role" name="role" required>
+                            <option value="Mesero">Mesero</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Supervisor">Supervisor</option>
+                        </select>
                     </div>
                     <div class="input-group">
                         <label for="status">Estado</label>
-                        <select id="status" name="status" required>
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
+                        <input type="text" id="status" name="status" value="Activo" disabled>
                     </div>
                 </div>
                 <div class="form-row">
@@ -86,6 +90,45 @@
         const today = new Date();
         const formattedDate = today.toISOString().split("T")[0];
         hireDateField.value = formattedDate;
+
+        const form = document.getElementById("registerForm");
+        const buttonSignUp = document.getElementById("buttonSignUp");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: "Registro exitoso",
+                text: "El usuario ha sido registrado correctamente.",
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then(() => {
+                switchToViewMode();
+            });
+        });
+
+        const switchToViewMode = () => {
+            const inputs = form.querySelectorAll("input, select, button[type='submit']");
+            inputs.forEach(input => input.disabled = true);
+            buttonSignUp.style.display = "none"; // Oculta el botón de Crear Cuenta
+
+            const editButton = document.createElement("button");
+            editButton.textContent = "Editar";
+            editButton.className = "btn";
+            editButton.addEventListener("click", () => {
+                inputs.forEach(input => input.disabled = false);
+                buttonSignUp.style.display = "block"; // Muestra el botón de Crear Cuenta
+                editButton.remove(); // Elimina el botón de Editar
+                backButton.remove(); // Elimina el botón de Regresar
+            });
+
+            const backButton = document.createElement("a");
+            backButton.textContent = "Regresar a la Lista";
+            backButton.href = "/";
+            backButton.className = "btn";
+
+            form.parentElement.appendChild(editButton);
+            form.parentElement.appendChild(backButton);
+        };
     });
 </script>
 

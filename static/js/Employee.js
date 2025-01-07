@@ -62,15 +62,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             const row = document.createElement("tr");
 
             row.innerHTML = `
-            <td>${user.nombre} ${user.apellido}</td>
-            <td>${user.correo}</td>
-            <td>${user.cargo}</td>
-            <td>${user.estado}</td>
-            <td>
-                <button class="edit-btn">Actualizar</button>
-                <button class="delete-btn">Eliminar</button>
-            </td>
-        `;
+        <td>${user.nombre} ${user.apellido}</td>
+        <td>${user.correo}</td>
+        <td>${user.cargo}</td>
+        <td>${user.estado}</td>
+        <td>
+            <button class="edit-btn">Actualizar</button>
+            <button class="inactivate-btn">Inactivar</button>
+        </td>
+    `;
 
             const cells = row.querySelectorAll("td:not(:last-child)");
             cells.forEach((cell, index) => {
@@ -211,25 +211,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
 
-        const deleteButtons = document.querySelectorAll(".delete-btn");
-        deleteButtons.forEach((button) => {
+        const inactivateButtons = document.querySelectorAll(".inactivate-btn");
+        inactivateButtons.forEach((button) => {
             button.addEventListener("click", async () => {
                 const row = button.closest("tr");
                 const email = row.querySelector("td:nth-child(2)").textContent.trim();
 
                 const result = await Swal.fire({
-                    title: "¿Eliminar usuario?",
-                    text: `¿Estás seguro de eliminar a ${email}?`,
+                    title: "¿Inactivar usuario?",
+                    text: `¿Estás seguro de inactivar a ${email}?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Sí, eliminar",
+                    confirmButtonText: "Sí, inactivar",
                     cancelButtonText: "Cancelar",
                 });
 
                 if (result.isConfirmed) {
                     try {
-                        const response = await fetch(`${BASE_URL}/delete`, {
-                            method: "POST",
+                        const response = await fetch(`${BASE_URL}/inactivate`, {
+                            method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
                             },
@@ -238,12 +238,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                         if (response.ok) {
                             row.remove();
-                            Swal.fire("Eliminado", "El usuario fue eliminado exitosamente", "success");
+                            Swal.fire("Inactivado", "El usuario fue inactivado exitosamente", "success");
                         } else {
-                            throw new Error("Error al eliminar el usuario");
+                            throw new Error("Error al inactivar el usuario");
                         }
                     } catch (error) {
-                        Swal.fire("Error", "No se pudo eliminar el usuario", "error");
+                        Swal.fire("Error", "No se pudo inactivar el usuario", "error");
                         console.error(error);
                     }
                 }
@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     if (response.ok) {
                         Swal.fire("Sesión cerrada", "Has cerrado sesión exitosamente.", "success").then(() => {
-                            window.location.href=  location.href
+                            window.location.href = location.href;
                         });
                     } else {
                         const error = await response.json();

@@ -969,3 +969,23 @@ body, html {
 .users-table tbody tr {
     height: auto; /* Asegúrate de que la altura de cada fila se ajuste automáticamente */
 }
+.inactivate-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #e74c3c; /* Rojo brillante para destacar */
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.inactivate-btn:hover {
+    background-color: #c0392b; /* Un tono más oscuro al pasar el mouse */
+    transform: scale(1.05); /* Efecto de ampliación suave */
+}
+
+.inactivate-btn:active {
+    background-color: #a93226; /* Un rojo aún más oscuro al hacer clic */
+    transform: scale(0.95); /* Efecto de compresión */
+}

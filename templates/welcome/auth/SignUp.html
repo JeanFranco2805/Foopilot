@@ -47,7 +47,7 @@
                 <div class="form-row">
                     <div class="input-group">
                         <label for="hire-date">Fecha de Contratación</label>
-                        <input type="date" id="hire-date" name="hire-date">
+                        <input type="date" id="hire-date" name="hire-date" required>
                     </div>
                     <div class="input-group">
                         <label for="phone">Teléfono</label>
@@ -75,8 +75,19 @@
                 </div>
             </form>
             <p class="login-link">&iquest;Ya tienes cuenta? <a href="{{ url_for('auth.Login') }}">Inicia sesión</a></p>
+            <a href="/" class="back-link">Volver al Menú Principal</a>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const hireDateField = document.getElementById("hire-date");
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0];
+        hireDateField.value = formattedDate;
+    });
+</script>
+
 </body>
 </html>

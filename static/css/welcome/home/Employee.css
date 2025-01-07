@@ -864,3 +864,108 @@ body, html {
         background-color: #479459;
     }
 }
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#searchInput {
+    width: 300px;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    font-size: 16px;
+    color: #aaa;
+    pointer-events: none;
+    transition: color 0.3s ease-in-out;
+}
+
+#searchInput:focus + .search-icon {
+    color: #007bff;
+}
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.add-btn {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    background-color: #58a36d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+    background-color: #479459;
+}
+
+.search-container {
+    position: relative;
+    flex-shrink: 0;
+}
+
+#searchInput {
+    width: 300px;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #aaa;
+    pointer-events: none;
+    transition: color 0.3s ease-in-out;
+}
+
+#searchInput:focus + .search-icon {
+    color: #007bff;
+}
+.users-table th, .users-table td {
+    padding: 5px 8px; /* Reduce el padding */
+    line-height: 1.2; /* Ajusta la altura de línea */
+    font-size: 14px; /* Opcional: ajusta el tamaño de fuente */
+}
+
+.users-table tbody tr {
+    height: auto; /* Asegúrate de que la altura de cada fila se ajuste automáticamente */
+}

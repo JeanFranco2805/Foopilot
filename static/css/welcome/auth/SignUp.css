@@ -116,3 +116,16 @@
 .login-link a:hover {
     text-decoration: underline;
 }
+.back-link {
+    display: block;
+    margin-top: 20px;
+    font-size: 1rem;
+    text-align: center;
+    color: #2d3436;
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.back-link:hover {
+    color: #0984e3;
+    text-shadow: 0 0 5px rgba(9, 132, 227, 0.5);
+}

@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const tableBody = document.querySelector(".users-table tbody");
     const logoutButton = document.getElementById("logoutButton");
+    const searchInput = document.getElementById("searchInput");
 
     const makeEditable = (cell, callback) => {
         const originalText = cell.textContent.trim();
@@ -39,11 +40,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const loadTableData = async () => {
         try {
             const response = await fetch(`${BASE_URL}/all`, { method: "GET" });
-            if (!response.ok) {
-                throw new Error("Error al cargar los datos de la tabla");
-            }
+            if (!response.ok) throw new Error("Error al cargar los datos de la tabla");
             users = await response.json();
-
+            users.sort((a, b) => a.nombre.localeCompare(b.nombre));
             renderTable(users, currentPage);
             generatePagination(users.length);
         } catch (error) {
@@ -63,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const row = document.createElement("tr");
 
             row.innerHTML = `
-            <td>${user.nombre}</td>
+            <td>${user.nombre} ${user.apellido}</td>
             <td>${user.correo}</td>
             <td>${user.cargo}</td>
             <td>${user.estado}</td>
@@ -108,12 +107,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         attachEventHandlers();
     };
 
+
     const generatePagination = (totalRecords) => {
         const totalPages = Math.ceil(totalRecords / recordsPerPage);
         const paginationContainer = document.querySelector(".pagination-container");
         paginationContainer.innerHTML = "";
 
-        // Botón Anterior
+        const firstPageButton = document.createElement("button");
+        firstPageButton.textContent = "Primera";
+        firstPageButton.disabled = currentPage === 1;
+        firstPageButton.addEventListener("click", () => {
+            currentPage = 1;
+            renderTable(users, currentPage);
+            generatePagination(users.length);
+        });
+        paginationContainer.appendChild(firstPageButton);
+
         const prevButton = document.createElement("button");
         prevButton.textContent = "Anterior";
         prevButton.disabled = currentPage === 1;
@@ -125,6 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
         paginationContainer.appendChild(prevButton);
+
         const pageButtonsRange = 5;
         const startPage = Math.max(1, currentPage - Math.floor(pageButtonsRange / 2));
         const endPage = Math.min(totalPages, startPage + pageButtonsRange - 1);
@@ -155,6 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         paginationContainer.appendChild(nextButton);
     };
+
 
     const attachEventHandlers = () => {
         const editButtons = document.querySelectorAll(".edit-btn");
@@ -332,6 +343,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         fileInput.click();
     });
+
+
+    const filterData = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredUsers = users.filter(user =>
+            user.nombre.toLowerCase().includes(searchTerm) ||
+            user.correo.toLowerCase().includes(searchTerm) ||
+            user.cargo.toLowerCase().includes(searchTerm) ||
+            user.estado.toLowerCase().includes(searchTerm)
+        );
+        renderTable(filteredUsers, 1);
+        generatePagination(filteredUsers.length);
+    };
+
+    searchInput.addEventListener("input", filterData);
     loadUserProfile();
     await loadTableData();
 });

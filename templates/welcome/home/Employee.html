@@ -6,6 +6,7 @@
     <title>Gestión de Usuarios</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Employee.css') }}">
     <script src="{{ url_for('static', filename='js/Employee.js') }}"></script>
 </head>
@@ -38,7 +39,13 @@
             <h1>Gestión de Usuarios</h1>
         </header>
         <div class="table-container">
-            <a href="{{ url_for('auth.SignUp') }}" class="add-btn">Insertar Nuevo Usuario</a>
+            <div class="actions-container">
+                <a href="{{ url_for('auth.SignUp') }}" class="add-btn">Insertar Nuevo Usuario</a>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar..." />
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
             <table class="users-table">
                 <thead>
                 <tr>
@@ -53,7 +60,6 @@
                 </tbody>
             </table>
             <div class="pagination-container"></div>
-
         </div>
     </main>
 </div>

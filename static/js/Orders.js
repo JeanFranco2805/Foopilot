@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let pedidos = [];
     let currentPage = 1;
     const recordsPerPage = 5;
-    const filtrosActivos = {
+    let filtrosActivos = {
         mesero: "",
         estado: "",
         fechaInicio: null,
@@ -83,54 +83,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function renderPedidos(pedidos, page) {
-        fetch('/api/employee/current_user', { method: 'GET' })
-            .then(response => response.json())
-            .then(userData => {
-                const userRole = userData.cargo;
-                const isAdminOrManager = userRole === 'Administrador' || userRole === 'Gerente';
+        const startIndex = (page - 1) * recordsPerPage;
+        const endIndex = startIndex + recordsPerPage;
+        const pedidosPagina = pedidos.slice(startIndex, endIndex);
 
-                const startIndex = (page - 1) * recordsPerPage;
-                const endIndex = startIndex + recordsPerPage;
-                const pedidosPagina = pedidos.slice(startIndex, endIndex);
+        tableBody.innerHTML = "";
 
-                tableBody.innerHTML = "";
+        pedidosPagina.forEach((pedido) => {
+            const Total = typeof pedido.Total === "number" ? `$${pedido.Total.toFixed(2)}` : `$${pedido.Total}`;
+            const fechaDespacho = pedido.fecha_hora_despacho ? pedido.fecha_hora_despacho : "N/A";
 
-                pedidosPagina.forEach((pedido) => {
-                    const Total = typeof pedido.Total === "number" ? `$${pedido.Total.toFixed(2)}` : `$${pedido.Total}`;
+            const fila = document.createElement("tr");
+            fila.dataset.idPedido = pedido.id_pedido;
 
-                    const fila = document.createElement("tr");
-                    fila.dataset.idPedido = pedido.id_pedido;
-
-                    fila.innerHTML = `
-                <td>${pedido.id_pedido}</td>
-                <td ondblclick="hacerEditable(this, 'id_mesa')">${pedido.id_mesa}</td>
-                <td ondblclick="hacerEditable(this, 'mesero')">${pedido.mesero}</td>
-                <td ondblclick="hacerEditable(this, 'Total')">${Total}</td>
-                <td ondblclick="hacerEditable(this, 'fecha_hora')">${pedido.fecha_hora}</td>
-                <td ondblclick="hacerEditable(this, 'estado')">${pedido.estado}</td>
-                <td>
-                    <button class="details-btn ver-detalles-btn" data-id="${pedido.id_pedido}">Ver Detalles</button>
-                </td>
-                <td>
-                    <div class="actions-container">
-                        <button class="edit-btn ${!isAdminOrManager ? 'blocked' : ''}" 
-                                ${!isAdminOrManager ? 'disabled' : ''} 
-                                onclick="${!isAdminOrManager ? "showPermissionDeniedMessage()" : "actualizarFila(this)"}">
-                            Actualizar
-                        </button>
-                        <button class="delete-btn ${!isAdminOrManager ? 'blocked' : ''}" 
-                                ${!isAdminOrManager ? 'disabled' : ''} 
-                                onclick="${!isAdminOrManager ? "showPermissionDeniedMessage()" : "eliminarPedido(this)"}">
-                            Eliminar
-                        </button>
-                    </div>
-                </td>
-                `;
-                    tableBody.appendChild(fila);
-                });
-            })
-            .catch(error => console.error("Error al obtener el usuario actual:", error));
+            fila.innerHTML = `
+            <td>${pedido.id_pedido}</td>
+            <td ondblclick="hacerEditable(this, 'id_mesa')">${pedido.id_mesa}</td>
+            <td ondblclick="hacerEditable(this, 'mesero')">${pedido.mesero}</td>
+            <td ondblclick="hacerEditable(this, 'Total')">${Total}</td>
+            <td>${pedido.fecha_hora}</td>
+            <td>${fechaDespacho}</td>
+            <td ondblclick="hacerEditable(this, 'estado')">${pedido.estado}</td>
+            <td>
+                <button class="details-btn ver-detalles-btn" data-id="${pedido.id_pedido}">Ver Detalles</button>
+            </td>
+            <td>
+                <div class="actions-container">
+                    <button class="edit-btn" onclick="actualizarFila(this)">Actualizar</button>
+                    <button class="delete-btn" onclick="cancelarPedido(this)">Cancelar</button>
+                </div>
+            </td>
+        `;
+            tableBody.appendChild(fila);
+        });
     }
+
+
+
 
     function showPermissionDeniedMessage() {
         Swal.fire({
@@ -204,46 +193,85 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     window.hacerEditable = function (cell, field) {
-        const originalValue = cell.innerText.trim();
-        const input = document.createElement("input");
+        const originalValue = cell.innerText.trim(); // Guardar el valor original
+        const input = document.createElement("input"); // Crear el input
         input.type = "text";
-        input.value = originalValue;
+        input.value = originalValue.replace("$", "").trim(); // Eliminar el "$" si existe
+        input.classList.add("editable-input"); // Clase para estilo opcional
 
-        cell.innerHTML = "";
-        cell.appendChild(input);
+        cell.innerHTML = ""; // Vaciar el contenido de la celda
+        cell.appendChild(input); // Agregar el input a la celda
 
-        input.focus();
+        input.focus(); // Focar en el input al crearlo
+
+        // Guardar cambios al presionar Enter
         input.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
-                guardarValorEditado(cell, input, originalValue);
+                guardarValorEditado(cell, input, originalValue, field);
             }
         });
+
+        // Guardar cambios al perder el foco
         input.addEventListener("blur", () => {
-            guardarValorEditado(cell, input, originalValue);
+            guardarValorEditado(cell, input, originalValue, field);
         });
     };
 
-    function guardarValorEditado(cell, input, originalValue) {
-        const newValue = input.value.trim();
-        if (newValue === originalValue || newValue === "") {
-            cell.innerText = originalValue;
-        } else {
-            cell.innerText = newValue;
-            cell.dataset.valueChanged = "true";
+    async function guardarValorEditado(cell, input, originalValue, field) {
+        let newValue = input.value.trim();
+        if (field === "Total") {
+            newValue = newValue.replace(/[^0-9.]/g, ""); // Eliminar caracteres no numéricos
+            if (isNaN(newValue) || newValue === "") {
+                newValue = originalValue.replace("$", ""); // Restaurar valor original si es inválido
+            } else {
+                newValue = parseFloat(newValue).toFixed(2); // Formatear correctamente con dos decimales
+            }
+        }
+
+        // Restaurar el formato de la celda
+        cell.innerText = field === "Total" ? `$${newValue}` : newValue;
+
+        // Evitar envío si no hay cambios
+        if (newValue === originalValue.replace("$", "").trim()) return;
+
+        // Preparar datos para el servidor
+        const idPedido = cell.closest("tr").dataset.idPedido; // Obtener el ID del pedido
+        const data = { [field]: newValue };
+
+        try {
+            const response = await fetch(`/api/orders/actualizar/${idPedido}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Error desconocido al actualizar.");
+            }
+
+            Swal.fire("Actualizado", "El valor se actualizó correctamente.", "success");
+        } catch (error) {
+            console.error("Error al actualizar:", error);
+            Swal.fire("Error", `No se pudo actualizar: ${error.message}`, "error");
+            cell.innerText = field === "Total" ? `$${originalValue.replace("$", "").trim()}` : originalValue; // Restaurar valor original en caso de error
         }
     }
+
+
+
     window.actualizarFila = async function (button) {
         const fila = button.closest("tr");
         const idPedido = fila.dataset.idPedido;
         const data = {};
         fila.querySelectorAll("td[ondblclick]").forEach((cell) => {
-            const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1]; // Obtener el nombre del campo
+            const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1]; // Obtener el campo
             const valueChanged = cell.dataset.valueChanged === "true"; // Verificar si cambió el valor
             let value = cell.innerText.trim();
 
             if (valueChanged) {
                 if (field === "Total") {
-                    value = parseFloat(value.replace(/[^0-9.]/g, "")); // Remueve caracteres no numéricos
+                    value = parseFloat(value.replace(/[^0-9.]/g, "")); // Remover caracteres no numéricos
                     if (isNaN(value)) value = 0;
                 }
                 data[field] = value;
@@ -253,6 +281,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (Object.keys(data).length === 0) {
             Swal.fire("Sin cambios", "No se detectaron cambios para actualizar.", "info");
             return;
+        }
+
+        // Si el estado cambia a "Completado", envía una solicitud para establecer la fecha de despacho
+        if (data.estado && data.estado.toLowerCase() === "completado") {
+            data.fecha_hora_despacho = new Date().toISOString(); // Agrega la fecha actual
         }
 
         try {
@@ -270,14 +303,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 cargarPedidos();
             } else {
                 const error = await response.json();
-                const errorMessage = error.message || error.error || "Error desconocido"; // Manejar diferentes campos
-                Swal.fire("Error", `No se pudo actualizar el pedido: ${errorMessage}`, "error");
+                Swal.fire("Error", `No se pudo actualizar el pedido: ${error.message || error.error}`, "error");
             }
         } catch (error) {
             Swal.fire("Error", "Ocurrió un error al actualizar el pedido.", "error");
             console.error("Error al actualizar pedido:", error);
         }
     };
+
 
 
     window.eliminarPedido = async function (button) {
@@ -337,6 +370,73 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.querySelector(".close").addEventListener("click", () => {
         modal.style.display = "none";
     });
+    async function cancelarPedido(button) {
+        const fila = button.closest("tr");
+        const idPedido = fila.dataset.idPedido;
+
+        const result = await Swal.fire({
+            title: "¿Cancelar pedido?",
+            text: "El pedido será cancelado y no podrá restaurarse.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cancelar",
+            cancelButtonText: "No"
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/api/orders/cancelar/${idPedido}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    Swal.fire("Cancelado", result.message, "success");
+                    cargarPedidos(); // Recargar la lista de pedidos
+                } else {
+                    const error = await response.json();
+                    Swal.fire("Error", error.error || "No se pudo cancelar el pedido.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un error al intentar cancelar el pedido.", "error");
+                console.error("Error al cancelar pedido:", error);
+            }
+        }
+    }
+
+    window.cancelarPedido = cancelarPedido;
+
+
+    async function cargarPedidosCancelados() {
+        try {
+            const response = await fetch("/api/orders/cancelados");
+            if (!response.ok) throw new Error("No se pudo obtener la lista de pedidos cancelados");
+
+            const pedidosCancelados = await response.json();
+            renderPedidosCancelados(pedidosCancelados);
+        } catch (error) {
+            Swal.fire("Error", "No se pudieron cargar los pedidos cancelados.", "error");
+        }
+    }
+
+    function renderPedidosCancelados(pedidos) {
+        const canceladosBody = document.querySelector(".cancelled-orders-table tbody");
+        canceladosBody.innerHTML = "";
+
+        pedidos.forEach(pedido => {
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+            <td>${pedido.id_pedido}</td>
+            <td>${pedido.id_mesa}</td>
+            <td>${pedido.mesero}</td>
+            <td>$${pedido.Total.toFixed(2)}</td>
+            <td>${pedido.fecha_hora}</td>
+            <td>${pedido.estado}</td>
+        `;
+            canceladosBody.appendChild(fila);
+        });
+    }
 
     logoutButton.addEventListener("click", async () => {
         const result = await Swal.fire({

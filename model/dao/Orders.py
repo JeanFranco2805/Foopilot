@@ -10,7 +10,7 @@ class Pedido(db.Model):
     id_mesa = db.Column(db.Integer, db.ForeignKey("Mesas.id_mesa"), nullable=False)
     id_empleado = db.Column(db.Integer, db.ForeignKey("Empleados.id"), nullable=False)
     estado = db.Column(db.String(20), nullable=True)
-    Total = db.Column(db.Integer)
+    Total = db.Column(db.Double)
     detalles = db.relationship("DetallePedido", backref="pedido", lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):

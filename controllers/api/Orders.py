@@ -7,6 +7,7 @@ from datetime import datetime
 
 pedido_bp = Blueprint('pedido_bp', __name__)
 
+
 @pedido_bp.route('/details/<int:id_pedido>', methods=['GET'])
 def obtener_detalles_pedido(id_pedido):
     try:
@@ -127,35 +128,6 @@ def obtener_todos_pedidos():
         return jsonify({"error": f"Error al obtener pedidos: {str(e)}"}), 500
 
 
-@pedido_bp.route('/actualizar/<int:pedido_id>', methods=['PUT'])
-def actualizar_pedido(pedido_id):
-    try:
-        data = request.get_json()
-
-        pedido = Pedido.query.filter_by(id_pedido=pedido_id).first()
-
-        if not pedido:
-            return jsonify({"message": f"No se encontró ningún pedido con el ID {pedido_id}"}), 404
-
-        if "fecha_hora" in data:
-            pedido.fecha_hora = datetime.strptime(data["fecha_hora"], "%Y-%m-%d %H:%M:%S")
-        if "id_mesa" in data:
-            pedido.id_mesa = int(data["id_mesa"])
-        if "Total" in data:
-            pedido.Total = float(data["Total"])
-        if "estado" in data:
-            pedido.estado = data["estado"]
-
-        db.session.commit()
-
-        return jsonify({"message": f"Pedido con ID {pedido_id} actualizado exitosamente."}), 200
-    except ValueError as ve:
-        return jsonify({"error": f"Valor inválido: {str(ve)}"}), 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-
 @pedido_bp.route('/eliminar/<int:pedido_id>', methods=['DELETE'])
 def eliminar_pedido(pedido_id):
     try:
@@ -171,6 +143,7 @@ def eliminar_pedido(pedido_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Error al eliminar el pedido: {str(e)}"}), 500
+
 
 @pedido_bp.route('/details', methods=['GET'])
 def obtener_detalles_todos_pedidos():
@@ -198,6 +171,100 @@ def obtener_detalles_todos_pedidos():
 
             detalles.append(pedido_detalles)
 
+        return jsonify(detalles), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@pedido_bp.route('/cancelar/<int:pedido_id>', methods=['PUT'])
+def cancelar_pedido(pedido_id):
+    try:
+        pedido = Pedido.query.filter_by(id_pedido=pedido_id).first()
+
+        if not pedido:
+            return jsonify({"error": f"No se encontró ningún pedido con el ID {pedido_id}"}), 404
+
+        pedido.estado = 'Cancelado'
+        db.session.commit()
+
+        return jsonify({"message": f"Pedido con ID {pedido_id} cancelado exitosamente."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al cancelar el pedido: {str(e)}"}), 500
+
+
+@pedido_bp.route('/cancelados', methods=['GET'])
+def obtener_pedidos_cancelados():
+    try:
+        pedidos_cancelados = Pedido.query.filter_by(estado='Cancelado').all()
+
+        resultado = [{
+            "id_pedido": pedido.id_pedido,
+            "fecha_hora": pedido.fecha_hora.strftime("%Y-%m-%d %H:%M:%S") if pedido.fecha_hora else None,
+            "id_mesa": pedido.id_mesa,
+            "mesero": f"{pedido.empleado.nombre} {pedido.empleado.apellido}",
+            "estado": pedido.estado,
+            "Total": pedido.Total
+        } for pedido in pedidos_cancelados]
+
+        return jsonify(resultado), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener pedidos cancelados: {str(e)}"}), 500
+
+
+@pedido_bp.route('/actualizar/<int:pedido_id>', methods=['PUT'])
+def actualizar_pedido(pedido_id):
+    try:
+        data = request.get_json()
+
+        pedido = Pedido.query.filter_by(id_pedido=pedido_id).first()
+
+        if not pedido:
+            return jsonify({"message": f"No se encontró ningún pedido con el ID {pedido_id}"}), 404
+
+        if "estado" in data and data["estado"] == "Completado":
+            pedido.fecha_hora_despacho = datetime.now()
+
+        if "id_mesa" in data:
+            pedido.id_mesa = int(data["id_mesa"])
+        if "Total" in data:
+            pedido.Total = float(data["Total"])
+        if "estado" in data:
+            pedido.estado = data["estado"]
+
+        db.session.commit()
+
+        return jsonify({"message": f"Pedido con ID {pedido_id} actualizado exitosamente."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@pedido_bp.route('/find/<int:id_mesa>', methods=['GET'])
+def buscar_pedido_por_mesa(id_mesa):
+    try:
+        pedido = Pedido.query.filter(
+            Pedido.id_mesa == id_mesa,
+            Pedido.estado == 'En proceso'
+        ).first()
+
+        if not pedido:
+            return jsonify({"message": "No hay pedidos en proceso para esta mesa."}), 404
+
+        detalles = {
+            "id_pedido": pedido.id_pedido,
+            "id_mesa": pedido.id_mesa,
+            "estado": pedido.estado,
+            "productos": [
+                {
+                    "id_producto": detalle.producto.id_producto,  # Cambiado a id_producto
+                    "nombre": detalle.producto.nombre,
+                    "cantidad": detalle.cantidad,
+                    "precio": detalle.producto.precio
+                }
+                for detalle in pedido.detalles
+            ]
+        }
         return jsonify(detalles), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

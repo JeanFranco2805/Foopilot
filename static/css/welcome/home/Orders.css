@@ -928,3 +928,30 @@ body, html {
         background-color: #479459;
     }
 }
+.orders-table {
+    width: 100%; /* Cambiar a un ancho más amplio */
+    margin: 20px 0; /* Espaciado adicional alrededor de la tabla */
+    border-collapse: collapse;
+}
+
+.orders-table th, .orders-table td {
+    padding: 12px; /* Agregar más espacio dentro de las celdas */
+    text-align: left;
+    border: 1px solid #ddd;
+    white-space: nowrap; /* Evita que el texto se corte en múltiples líneas */
+}
+
+.orders-table th {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+}
+
+.orders-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Alternar colores para mayor legibilidad */
+}
+.table-container {
+    width: 95%; /* Ajusta este valor según el espacio necesario */
+    margin: 0 auto; /* Centrar la tabla */
+    overflow-x: auto; /* Permitir desplazamiento horizontal si es necesario */
+}

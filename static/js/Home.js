@@ -1,5 +1,5 @@
-const BASE_URL_PRODUCTS = "https://puntofrio-production.up.railway.app/api/products";
-const BASE_URL_CATEGORIES = "https://puntofrio-production.up.railway.app/api/categories";
+const BASE_URL_PRODUCTS = "/api/products";
+const BASE_URL_CATEGORIES = "/api/categories/";
 
 async function loadCategories() {
     try {

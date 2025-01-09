@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const response = await fetch(`${BASE_URL}/all`, { method: "GET" });
             if (!response.ok) throw new Error("Error al cargar los datos de la tabla");
             users = await response.json();
+            users = users.filter(user => user.estado.toLowerCase() === "activo");
             users.sort((a, b) => a.nombre.localeCompare(b.nombre));
             renderTable(users, currentPage);
             generatePagination(users.length);
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             Swal.fire("Error", "No se pudieron cargar los datos de los empleados.", "error");
         }
     };
+
 
     const renderTable = (data, page) => {
         const startIndex = (page - 1) * recordsPerPage;
@@ -246,6 +248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         Swal.fire("Error", "No se pudo inactivar el usuario", "error");
                         console.error(error);
                     }
+                    loadTableData()
                 }
             });
         });

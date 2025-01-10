@@ -116,3 +116,13 @@ def logout():
     session.clear()
     flash("Sesión cerrada exitosamente.", "info")
     return redirect(url_for('home.login'))
+
+
+@home.route("/store")
+def store():
+    return render_template('welcome/home/Store.html')
+
+
+@home.route("/employee/orders/update")
+def order_update():
+    return render_template('welcome/home/forms/OrderFormUpdate.html')

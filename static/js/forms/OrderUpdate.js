@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const fechaEntregaField = document.getElementById("fecha_hora_desc");
     const totalDisplay = document.createElement("div"); // Elemento para mostrar el total
     let total = 0;
-
+    let employee = null
+    let pedido = null
     function getCurrentDateTime() {
         const now = new Date();
         const year = now.getFullYear();
@@ -16,21 +17,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const minutes = String(now.getMinutes()).padStart(2, "0");
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
+
     estadoField.value = "En proceso";
     fechaEntregaField.value = getCurrentDateTime();
+
     async function getCurrentEmployee() {
         try {
-            const response = await fetch("/api/employee/current_user");
-            if (!response.ok) throw new Error("No se pudo obtener el empleado actual");
-
-            const empleado = await response.json();
-
-            // Mostrar el formato #[Código] - Nombre Apellidos
-            const displayText = `#${empleado.id} - ${empleado.nombre} ${empleado.apellido}`;
-            idEmpleadoField.value = displayText; // Mostrar el texto en el campo
-            idEmpleadoField.setAttribute("data-id", empleado.id); // Guardar solo el ID como atributo
-            idEmpleadoField.disabled = true; // Asegurar que no sea editable
-            cargarMesasEmpleado(empleado.id);
+            const response = await fetch(`/api/orders/obtener/${localStorage.getItem('pedidoId')}`);
+            pedido = await response.json();
+            const response2 = await fetch(`/api/employee/byId/${pedido.id_empleado}`)
+            employee = await response2.json()
+            idEmpleadoField.value = `#${employee.id} - ${employee.nombre} ${employee.apellido}`;
+            idEmpleadoField.setAttribute("data-id", employee.id);
+            idEmpleadoField.disabled = true;
+            cargarMesasEmpleado(employee.id);
         } catch (error) {
             console.error("Error al obtener el empleado actual:", error);
             Swal.fire("Error", "❌ No se pudo obtener el empleado actual.", "error");
@@ -41,22 +41,25 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`/api/mesas/empleado/${empleadoId}`);
             if (!response.ok) throw new Error("Error al obtener mesas atendidas.");
-
             const mesas = await response.json();
             const dataList = document.getElementById("mesas");
-            dataList.innerHTML = "";
-
+            const inputMesas = document.getElementById("id_mesa")
             mesas.forEach((mesa, index) => {
                 const option = document.createElement("option");
                 option.value = mesa.id;
                 option.textContent = `MESA #${index + 1} - ID: ${mesa.id}`;
                 dataList.appendChild(option);
-            });
+            })
+            inputMesas.value = pedido.id_mesa
+            let response2 = await fetch(`/api/orders/find/${pedido.id_mesa}`);
+            let json2 = await response2.json()
+            cargarPedidoExistente(json2)
         } catch (error) {
             console.error("Error al cargar mesas del empleado:", error);
             Swal.fire("Error", "❌ No se pudieron cargar las mesas del empleado.", "error");
         }
     }
+
     function actualizarTotal() {
         total = 0;
         const productosSeleccionados = document.querySelectorAll(".producto-item input[type='checkbox']:checked");
@@ -97,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 productosPorCategoria[nombreCategoria].push(prod);
             });
 
-            // Mantener productos ya seleccionados y sus cantidades
             const productosSeleccionados = {};
             document.querySelectorAll(".producto-item input[type='checkbox']:checked").forEach(checkbox => {
                 const cantidadInput = checkbox.parentElement.querySelector(".cantidad-input");
@@ -107,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 };
             });
 
-            productosContainer.innerHTML = "";
+            productosContainer.innerHTML = ""; // Limpiar contenedor
             for (const categoria in productosPorCategoria) {
                 const categorySection = document.createElement("div");
                 categorySection.classList.add("categoria-section");
@@ -139,9 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         cantidadInput.disabled = !checkbox.checked;
                         actualizarTotal();
                     });
-
                     cantidadInput.addEventListener("input", actualizarTotal);
-
                     categorySection.appendChild(checkboxContainer);
                 });
 
@@ -159,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         const productosSeleccionados = [];
         document.querySelectorAll(".producto-item input[type='checkbox']:checked").forEach(checkbox => {
             const cantidadInput = checkbox.parentElement.querySelector(".cantidad-input");
@@ -179,8 +178,8 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch("/api/orders/insertar", {
-                method: "POST",
+            const response = await fetch(`/api/orders/actualizar/${pedido.id_pedido}`, {
+                method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData),
             });
@@ -189,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
                 Swal.fire({
                     title: "Éxito",
-                    text: `✅ Pedido insertado con éxito. ID: ${result.id_pedido}`,
+                    text: `✅ Pedido actualizado con éxito. ID: ${pedido.id_pedido}`,
                     icon: "success",
                     confirmButtonText: "Aceptar"
                 });
@@ -205,16 +204,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     document.getElementById("id_mesa").addEventListener("change", async (event) => {
-        const mesaId = event.target.value; // Obtener el ID de la mesa seleccionada
+        const mesaId = event.target.value;
         if (!mesaId) return;
         try {
             const response = await fetch(`/api/orders/find/${mesaId}`);
             if (!response.ok) {
                 throw new Error("No se pudo obtener el pedido para esta mesa.");
             }
-
             const pedido = await response.json();
-            console.log(pedido)
             if (pedido && pedido.estado === "En proceso") {
                 cargarPedidoExistente(pedido);
             } else {
@@ -244,6 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         cargarProductos()
     }
+
     cargarProductos();
     getCurrentEmployee();
 });

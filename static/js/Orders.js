@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let pedidos = [];
     let currentPage = 1;
-    const recordsPerPage = 5;
+    const recordsPerPage = 10;
     let filtrosActivos = {
         mesero: "",
         estado: "",
@@ -21,12 +21,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function cargarPedidos() {
         try {
-            const response = await fetch("/api/orders/all");
+            const employee = await fetch("/api/employee/current_user");
+            const currentUser = await employee.json();
+            let response = null;
+            if (currentUser.cargo.toUpperCase() === 'ADMINISTRADOR' || currentUser.cargo.toUpperCase() === 'ADMIN') {
+                response = await fetch("/api/orders/all");
+            } else {
+                response = await fetch(`/api/orders/employee/${currentUser.id}`)
+            }
             if (!response.ok) {
                 throw new Error("No se pudo obtener la lista de pedidos");
             }
-
             pedidos = await response.json();
+            console.log(pedidos)
             filtrarYRenderizar();
         } catch (error) {
             console.error("Error al cargar los pedidos:", error.message);
@@ -64,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPedidos(pedidosFiltrados, currentPage);
         generatePagination(pedidosFiltrados.length);
     }
+
     filterButton.addEventListener("click", () => {
         currentPage = 1; // Reiniciar a la primera página
         aplicarFiltros();
@@ -74,12 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
         filterEstado.value = "";
         filterFechaInicio.value = "";
         filterFechaFin.value = "";
-        filtrosActivos = { mesero: "", estado: "", fechaInicio: null, fechaFin: null }; // Limpiar filtros
+        filtrosActivos = {mesero: "", estado: "", fechaInicio: null, fechaFin: null}; // Limpiar filtros
         currentPage = 1;
         renderPedidos(pedidos, currentPage);
         generatePagination(pedidos.length);
     });
-
 
 
     function renderPedidos(pedidos, page) {
@@ -117,8 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
             tableBody.appendChild(fila);
         });
     }
-
-
 
 
     function showPermissionDeniedMessage() {
@@ -236,12 +241,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Preparar datos para el servidor
         const idPedido = cell.closest("tr").dataset.idPedido; // Obtener el ID del pedido
-        const data = { [field]: newValue };
+        const data = {[field]: newValue};
 
         try {
             const response = await fetch(`/api/orders/actualizar/${idPedido}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(data),
             });
 
@@ -259,19 +264,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
     window.actualizarFila = async function (button) {
         const fila = button.closest("tr");
         const idPedido = fila.dataset.idPedido;
         const data = {};
-        fila.querySelectorAll("td[ondblclick]").forEach((cell) => {
-            const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1]; // Obtener el campo
-            const valueChanged = cell.dataset.valueChanged === "true"; // Verificar si cambió el valor
+        localStorage.setItem("pedidoId", idPedido)
+        window.location.href=window.location+"/update"
+        /*fila.querySelectorAll("td[ondblclick]").forEach((cell) => {
+            const field = cell.getAttribute("ondblclick").match(/'([^']+)'/)[1];
+            const valueChanged = cell.dataset.valueChanged === "true";
             let value = cell.innerText.trim();
-
             if (valueChanged) {
                 if (field === "Total") {
-                    value = parseFloat(value.replace(/[^0-9.]/g, "")); // Remover caracteres no numéricos
+                    value = parseFloat(value.replace(/[^0-9.]/g, ""));
                     if (isNaN(value)) value = 0;
                 }
                 data[field] = value;
@@ -283,7 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Si el estado cambia a "Completado", envía una solicitud para establecer la fecha de despacho
         if (data.estado && data.estado.toLowerCase() === "completado") {
             data.fecha_hora_despacho = new Date().toISOString(); // Agrega la fecha actual
         }
@@ -308,9 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             Swal.fire("Error", "Ocurrió un error al actualizar el pedido.", "error");
             console.error("Error al actualizar pedido:", error);
-        }
+        }*/
     };
-
 
 
     window.eliminarPedido = async function (button) {
@@ -370,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.querySelector(".close").addEventListener("click", () => {
         modal.style.display = "none";
     });
+
     async function cancelarPedido(button) {
         const fila = button.closest("tr");
         const idPedido = fila.dataset.idPedido;
@@ -387,7 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const response = await fetch(`/api/orders/cancelar/${idPedido}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" }
+                    headers: {"Content-Type": "application/json"}
                 });
 
                 if (response.ok) {
@@ -509,8 +513,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     try {
                         const response = await fetch("/api/employee/update_photo", {
                             method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ foto_perfil: base64Image }),
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({foto_perfil: base64Image}),
                         });
 
                         if (response.ok) {
@@ -532,6 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fileInput.click();
     });
+
     function aplicarFiltros() {
         filtrosActivos.mesero = filterMesero.value.toLowerCase();
         filtrosActivos.estado = filterEstado.value;

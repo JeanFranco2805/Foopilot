@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Dispatch</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/welcome/home/Store.css') }}">
+</head>
+<body>
+<header class="header">
+    <h1>Order Dispatch</h1>
+</header>
+<main class="container">
+    <table class="order-table">
+        <thead>
+        <tr>
+            <th>Order Date</th>
+            <th>Table</th>
+            <th>Observations</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Example rows -->
+        <tr>
+            <td>2025-01-09</td>
+            <td>Table 5</td>
+            <td>Extra cheese</td>
+            <td class="actions">
+                <button class="btn-view">View Products</button>
+            </td>
+        </tr>
+        <tr>
+            <td>2025-01-09</td>
+            <td>Table 7</td>
+            <td>Gluten-free</td>
+            <td class="actions">
+                <button class="btn-view">View Products</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

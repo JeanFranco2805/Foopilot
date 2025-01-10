@@ -269,3 +269,21 @@ def get_inactive_employees():
         ]), 200
     except Exception as e:
         return jsonify({"error": f"Error al obtener empleados inactivos: {str(e)}"}), 500
+
+
+@employee.route('/byId/<int:user_id>')
+def get_employee_by_id(user_id):
+    user = db.session.query(Employee).filter_by(id=user_id).first()
+    json = {
+        "id": user.id,
+        "nombre": user.nombre,
+        "apellido": user.apellido,
+        "cargo": user.cargo,
+        "estado": user.estado,
+        "fecha_contratacion": user.fecha_contratacion,
+        "correo": user.correo,
+        "telefono": user.telefono,
+        "password": user.password,
+        "foto_perfil": user.foto_perfil
+    }
+    return jsonify(json), 200

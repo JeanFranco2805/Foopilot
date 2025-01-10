@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Pedido</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/forms/Orders.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/forms/OrderUpdate.js') }}" defer></script>
+</head>
+<body>
+<div class="form-container">
+    <div class="form-title">Actualizar Pedido Existente</div>
+    <form id="pedidoForm" method="POST" action="/api/pedidos/insertar">
+        <div class="form-group">
+            <label for="id_mesa"><i class="fas fa-chair"></i> ID de la Mesa</label>
+            <input list="mesas" id="id_mesa" name="id_mesa" placeholder="Seleccione una mesa...">
+            <datalist id="mesas"></datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="id_empleado"><i class="fas fa-user-tie"></i> Código del Empleado</label>
+            <input list="empleados" id="id_empleado" name="id_empleado" placeholder="Seleccione o ingrese el CÓDIGO del empleado" required>
+            <datalist id="empleados"></datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="estado"><i class="fas fa-tasks"></i> Estado</label>
+            <select id="estado" name="estado" required>
+                <option value="" disabled selected>Seleccione el estado</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Completado">Completado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha_hora_desc"><i class="fas fa-calendar-alt"></i> Fecha de Modificación</label>
+            <input type="datetime-local" id="fecha_hora_desc" name="fecha_hora_desc" disabled>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-box"></i> Selección de Productos</label>
+            <div id="productos-container" class="productos-container">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Actualizar Pedido
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

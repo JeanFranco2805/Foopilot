@@ -38,6 +38,26 @@ def obtener_detalles_pedido(id_pedido):
         return jsonify({"error": str(e)}), 500
 
 
+@pedido_bp.route('/obtener/<int:pedido_id>')
+def obtener_pedido_por_id(pedido_id):
+    pedido = Pedido.query.filter_by(id_pedido=pedido_id).first()
+    json = {
+        "id_pedido": pedido.id_pedido,
+        "fecha_hora": pedido.fecha_hora,
+        "fecha_hora_despacho": pedido.fecha_hora_despacho,
+        "id_mesa": pedido.id_mesa,
+        "id_empleado": pedido.id_empleado,
+        "estado": pedido.estado,
+        "Total": pedido.Total,
+        "productos": [{
+            "id_pedido": detalle.id_pedido,
+            "id_producto": detalle.id_producto,
+            "cantidad": detalle.cantidad
+        } for detalle in pedido.detalles]
+    }
+    return jsonify(json), 200
+
+
 @pedido_bp.route('/buscar/<int:id_mesa>', methods=['GET'])
 def buscar_pedidos(id_mesa):
     try:
@@ -64,7 +84,6 @@ def buscar_pedidos(id_mesa):
 def insertar_pedido():
     try:
         data = request.get_json()
-
         required_fields = ["id_mesa", "id_empleado", "estado", "Total", "productos"]
         for field in required_fields:
             if field not in data:
@@ -105,10 +124,8 @@ def insertar_pedido():
 def obtener_todos_pedidos():
     try:
         pedidos = db.session.query(Pedido, Employee).join(Employee, Pedido.id_empleado == Employee.id).all()
-
         if not pedidos:
             return jsonify({"message": "No hay pedidos registrados."}), 404
-
         resultado = [
             {
                 "id_pedido": pedido.id_pedido,
@@ -231,7 +248,24 @@ def actualizar_pedido(pedido_id):
             pedido.Total = float(data["Total"])
         if "estado" in data:
             pedido.estado = data["estado"]
+        if "productos" in data:
+            productos_actualizados = data["productos"]
 
+            for producto in productos_actualizados:
+                id_producto = int(producto["id_producto"])
+                cantidad = int(producto["cantidad"])
+
+                detalle = DetallePedido.query.filter_by(id_pedido=pedido_id, id_producto=id_producto).first()
+
+                if detalle:
+                    detalle.cantidad = cantidad
+                else:
+                    nuevo_detalle = DetallePedido(
+                        id_pedido=pedido_id,
+                        id_producto=id_producto,
+                        cantidad=cantidad
+                    )
+                    db.session.add(nuevo_detalle)
         db.session.commit()
 
         return jsonify({"message": f"Pedido con ID {pedido_id} actualizado exitosamente."}), 200
@@ -254,6 +288,8 @@ def buscar_pedido_por_mesa(id_mesa):
         detalles = {
             "id_pedido": pedido.id_pedido,
             "id_mesa": pedido.id_mesa,
+            "fecha_hora":pedido.fecha_hora,
+            "fecha_hora_despacho":pedido.fecha_hora_despacho,
             "estado": pedido.estado,
             "productos": [
                 {
@@ -268,3 +304,30 @@ def buscar_pedido_por_mesa(id_mesa):
         return jsonify(detalles), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@pedido_bp.route('/employee/<int:user_id>', methods=['GET'])
+def getOrderByEmployee(user_id):
+    pedido = db.session.query(Pedido, Employee).join(Employee, Pedido.id_empleado == Employee.id).filter_by(
+        id=user_id).all()
+    resultado = [
+        {
+            "id_pedido": order.id_pedido,
+            "fecha_hora": order.fecha_hora,
+            "fecha_hora_despacho": order.fecha_hora_despacho,
+            "id_mesa": order.id_mesa,
+            "mesero": employee.nombre + employee.apellido,
+            "estado": order.estado,
+            "Total": order.Total,
+            "detalles": [
+                {
+                    "id_pedido": detalle.id_pedido,
+                    "id_producto": detalle.id_producto,
+                    "cantidad": detalle.cantidad,
+                }
+                for detalle in order.detalles
+            ]
+        }
+        for order, employee in pedido
+    ]
+    return jsonify(resultado), 200
